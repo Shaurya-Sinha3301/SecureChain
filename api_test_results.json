@@ -1,0 +1,73 @@
+{
+  "health": {
+    "endpoint": "Health Check",
+    "status_code": 200,
+    "success": true,
+    "response": "{\"status\":\"success\"}"
+  },
+  "introspection": {
+    "endpoint": "GraphQL Introspection",
+    "status_code": 200,
+    "success": true,
+    "response": {
+      "errors": [
+        {
+          "message": "GraphQL introspection not authorized!",
+          "extensions": {
+            "code": "RESOURCE_NOT_FOUND",
+            "data": {
+              "http_status": 404
+            }
+          },
+          "name": "RESOURCE_NOT_FOUND"
+        }
+      ]
+    }
+  },
+  "authentication": {
+    "endpoint": "Authentication Test",
+    "status_code": 200,
+    "success": true,
+    "response": {
+      "errors": [
+        {
+          "message": "Cannot query field \"roles\" on type \"MeUser\". Did you mean \"groups\"?",
+          "locations": [
+            {
+              "line": 7,
+              "column": 21
+            }
+          ],
+          "extensions": {
+            "code": "GRAPHQL_VALIDATION_FAILED"
+          },
+          "name": "GRAPHQL_VALIDATION_FAILED"
+        }
+      ]
+    }
+  },
+  "indicators": {
+    "endpoint": "Indicators Query",
+    "status_code": 200,
+    "success": true,
+    "response": {
+      "data": {
+        "indicators": {
+          "edges": []
+        }
+      }
+    }
+  },
+  "malware": {
+    "endpoint": "Malware Query",
+    "status_code": 200,
+    "success": true,
+    "response": {
+      "data": {
+        "malwares": {
+          "edges": []
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "timestamp": "2025-10-14T21:23:37.900866",
+  "threat_landscape": {
+    "total_indicators": 5,
+    "total_malware_families": 3,
+    "threat_coverage": "High"
+  },
+  "use_cases": [
+    {
+      "name": "Automated Threat Blocking",
+      "description": "Automatically block known malicious IPs, domains, and hashes",
+      "value": "Block 5 known threats immediately"
+    },
+    {
+      "name": "Incident Response Enrichment",
+      "description": "Enrich security alerts with threat context and attribution",
+      "value": "Provide context for 3 malware families"
+    },
+    {
+      "name": "Proactive Threat Hunting",
+      "description": "Hunt for indicators across network and endpoint logs",
+      "value": "Hunt for 5 IOCs across infrastructure"
+    },
+    {
+      "name": "Threat Intelligence Reporting",
+      "description": "Generate executive and technical threat reports",
+      "value": "Report on 3 active threat families"
+    },
+    {
+      "name": "Security Tool Integration",
+      "description": "Feed threat intelligence into SIEM, EDR, and other tools",
+      "value": "Integrate 5 IOCs into security stack"
+    }
+  ],
+  "business_value": {
+    "threat_detection_time_saved_minutes": 150,
+    "incident_response_time_saved_minutes": 180,
+    "total_time_saved_hours": 5.5,
+    "estimated_cost_savings_per_month": 550.0,
+    "threats_prevented": 5,
+    "security_posture_improvement": "Significant"
+  }
+}

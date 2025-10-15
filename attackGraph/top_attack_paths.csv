@@ -1,0 +1,4 @@
+rank,source,target,path,score,path_length
+1,asset-internet-gw,asset-db-01,asset-internet-gw -> asset-web-01 -> asset-db-01,0.007666666666666669,3
+2,asset-internet-gw,asset-db-01,asset-internet-gw -> asset-web-01 -> asset-app-01 -> asset-db-01,0.0007375000000000002,4
+3,asset-internet-gw,asset-db-01,asset-internet-gw -> asset-web-01 -> asset-app-01 -> asset-fileserver-01 -> asset-db-01,7.200000000000002e-05,5

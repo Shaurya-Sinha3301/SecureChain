@@ -1,0 +1,129 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1><b>CVE-2020-1111
+CVSS 9.0</b><br>CVSS: 9.0</h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1><b>CVE-2020-1111
+CVSS 9.0</b><br>CVSS: 9.0</h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 800px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#2E7D32", "font": {"color": "#222222"}, "id": "asset-internet-gw", "label": "internet_gateway\n203.0.113.1", "shape": "box", "size": 39.0, "title": "\u003cb\u003easset-internet-gw\u003c/b\u003e\u003cbr\u003eType: \u003cbr\u003eIP: 203.0.113.1\u003cbr\u003eCriticality: 7.0\u003cbr\u003eExploit available: False"}, {"color": "#9E9E9E", "font": {"color": "#222222"}, "id": "CVE-2024-0001", "label": "CVE-2024-0001\nCVSS 6.5", "shape": "box", "size": 14, "title": "\u003cb\u003eCVE-2024-0001\nCVSS 6.5\u003c/b\u003e\u003cbr\u003eCVSS: 6.5"}, {"color": "#D32F2F", "font": {"color": "#222222"}, "id": "asset-web-01", "label": "web_server\n10.0.1.10", "shape": "box", "size": 42.0, "title": "\u003cb\u003easset-web-01\u003c/b\u003e\u003cbr\u003eType: \u003cbr\u003eIP: 10.0.1.10\u003cbr\u003eCriticality: 8.0\u003cbr\u003eExploit available: True"}, {"color": "#9E9E9E", "font": {"color": "#222222"}, "id": "CVE-2024-1234", "label": "CVE-2024-1234\nCVSS 9.8", "shape": "box", "size": 14, "title": "\u003cb\u003eCVE-2024-1234\nCVSS 9.8\u003c/b\u003e\u003cbr\u003eCVSS: 9.8"}, {"color": "#2E7D32", "font": {"color": "#222222"}, "id": "asset-app-01", "label": "app_server\n10.0.1.20", "shape": "box", "size": 39.0, "title": "\u003cb\u003easset-app-01\u003c/b\u003e\u003cbr\u003eType: \u003cbr\u003eIP: 10.0.1.20\u003cbr\u003eCriticality: 7.0\u003cbr\u003eExploit available: False"}, {"color": "#9E9E9E", "font": {"color": "#222222"}, "id": "CVE-2023-5678", "label": "CVE-2023-5678\nCVSS 7.1", "shape": "box", "size": 14, "title": "\u003cb\u003eCVE-2023-5678\nCVSS 7.1\u003c/b\u003e\u003cbr\u003eCVSS: 7.1"}, {"color": "#D32F2F", "font": {"color": "#222222"}, "id": "asset-db-01", "label": "db_server\n10.0.1.30", "shape": "box", "size": 48.0, "title": "\u003cb\u003easset-db-01\u003c/b\u003e\u003cbr\u003eType: \u003cbr\u003eIP: 10.0.1.30\u003cbr\u003eCriticality: 10.0\u003cbr\u003eExploit available: True"}, {"color": "#9E9E9E", "font": {"color": "#222222"}, "id": "CVE-2022-9999", "label": "CVE-2022-9999\nCVSS 8.6", "shape": "box", "size": 14, "title": "\u003cb\u003eCVE-2022-9999\nCVSS 8.6\u003c/b\u003e\u003cbr\u003eCVSS: 8.6"}, {"color": "#2E7D32", "font": {"color": "#222222"}, "id": "asset-fileserver-01", "label": "file_server\n10.0.2.50", "shape": "box", "size": 33.0, "title": "\u003cb\u003easset-fileserver-01\u003c/b\u003e\u003cbr\u003eType: \u003cbr\u003eIP: 10.0.2.50\u003cbr\u003eCriticality: 5.0\u003cbr\u003eExploit available: False"}, {"color": "#9E9E9E", "font": {"color": "#222222"}, "id": "CVE-2021-4242", "label": "CVE-2021-4242\nCVSS 6.9", "shape": "box", "size": 14, "title": "\u003cb\u003eCVE-2021-4242\nCVSS 6.9\u003c/b\u003e\u003cbr\u003eCVSS: 6.9"}, {"color": "#D32F2F", "font": {"color": "#222222"}, "id": "asset-admin-workstation", "label": "workstation\n10.0.3.10", "shape": "box", "size": 45.0, "title": "\u003cb\u003easset-admin-workstation\u003c/b\u003e\u003cbr\u003eType: \u003cbr\u003eIP: 10.0.3.10\u003cbr\u003eCriticality: 9.0\u003cbr\u003eExploit available: True"}, {"color": "#9E9E9E", "font": {"color": "#222222"}, "id": "CVE-2020-1111", "label": "CVE-2020-1111\nCVSS 9.0", "shape": "box", "size": 14, "title": "\u003cb\u003eCVE-2020-1111\nCVSS 9.0\u003c/b\u003e\u003cbr\u003eCVSS: 9.0"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "color": "#FFB74D", "from": "asset-internet-gw", "label": "has_vulnerability", "title": "has_vulnerability (w=6.5)", "to": "CVE-2024-0001", "width": 3.6}, {"arrows": "to", "color": "#64B5F6", "from": "asset-internet-gw", "label": "connected_to", "title": "connected_to (w=1.0)", "to": "asset-web-01", "width": 1.4}, {"arrows": "to", "color": "#FFB74D", "from": "asset-web-01", "label": "has_vulnerability", "title": "has_vulnerability (w=9.8)", "to": "CVE-2024-1234", "width": 4.92}, {"arrows": "to", "color": "#64B5F6", "from": "asset-web-01", "label": "connected_to", "title": "connected_to (w=1.0)", "to": "asset-app-01", "width": 1.4}, {"arrows": "to", "color": "#64B5F6", "from": "asset-web-01", "label": "connected_to", "title": "connected_to (w=1.0)", "to": "asset-db-01", "width": 1.4}, {"arrows": "to", "color": "#FFB74D", "from": "asset-app-01", "label": "has_vulnerability", "title": "has_vulnerability (w=7.1)", "to": "CVE-2023-5678", "width": 3.84}, {"arrows": "to", "color": "#64B5F6", "from": "asset-app-01", "label": "connected_to", "title": "connected_to (w=1.0)", "to": "asset-db-01", "width": 1.4}, {"arrows": "to", "color": "#64B5F6", "from": "asset-app-01", "label": "connected_to", "title": "connected_to (w=1.0)", "to": "asset-fileserver-01", "width": 1.4}, {"arrows": "to", "color": "#FFB74D", "from": "asset-db-01", "label": "has_vulnerability", "title": "has_vulnerability (w=8.6)", "to": "CVE-2022-9999", "width": 4.4399999999999995}, {"arrows": "to", "color": "#64B5F6", "from": "asset-db-01", "label": "connected_to", "title": "connected_to (w=1.0)", "to": "asset-web-01", "width": 1.4}, {"arrows": "to", "color": "#64B5F6", "from": "asset-db-01", "label": "connected_to", "title": "connected_to (w=1.0)", "to": "asset-app-01", "width": 1.4}, {"arrows": "to", "color": "#FFB74D", "from": "asset-fileserver-01", "label": "has_vulnerability", "title": "has_vulnerability (w=6.9)", "to": "CVE-2021-4242", "width": 3.7600000000000002}, {"arrows": "to", "color": "#64B5F6", "from": "asset-fileserver-01", "label": "connected_to", "title": "connected_to (w=1.0)", "to": "asset-db-01", "width": 1.4}, {"arrows": "to", "color": "#FFB74D", "from": "asset-admin-workstation", "label": "has_vulnerability", "title": "has_vulnerability (w=9.0)", "to": "CVE-2020-1111", "width": 4.6}, {"arrows": "to", "color": "#64B5F6", "from": "asset-admin-workstation", "label": "connected_to", "title": "connected_to (w=1.0)", "to": "asset-db-01", "width": 1.4}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"nodes": {"borderWidth": 1, "font": {"size": 14, "face": "Arial"}, "shapeProperties": {"borderRadius": 8}}, "edges": {"color": {"inherit": true}, "smooth": {"enabled": true, "type": "cubicBezier"}}, "physics": {"barnesHut": {"gravitationalConstant": -16000, "centralGravity": 0.3, "springLength": 200, "springConstant": 0.05, "damping": 0.09}, "minVelocity": 0.75}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

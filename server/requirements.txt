@@ -1,0 +1,29 @@
+# AI and ML dependencies
+google-generativeai
+sentence-transformers
+numpy
+scikit-learn
+
+# Web framework and API
+fastapi
+uvicorn[standard]
+pydantic
+
+# Environment and configuration
+python-dotenv
+
+# Database (if needed for persistence)
+sqlalchemy
+sqlite3
+
+# HTTP and networking
+httpx
+requests
+
+# CORS and security
+python-multipart
+python-jose[cryptography]
+passlib[bcrypt]
+
+# Utilities
+python-dateutil

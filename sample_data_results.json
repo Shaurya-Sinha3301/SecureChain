@@ -1,0 +1,18 @@
+{
+  "created_entities": 8,
+  "created_relationships": 0,
+  "threat_actors": [],
+  "malware_families": [
+    "2840da8d-5c22-4400-af9a-e0934ea01699",
+    "d7b0d0ee-e58c-4416-8306-c8edeeb339ed",
+    "22a1809a-2b63-4efc-a366-5e7f0cc65b33"
+  ],
+  "indicators": [
+    "af59b49a-8a13-4937-b5b9-f3b2af31dbf9",
+    "bea6845c-ef4d-4f2c-a11c-a9463c1ce062",
+    "1cc0ee65-4fbc-4aab-838b-eef8df58adf5",
+    "fcf3b672-0d80-4d61-afd9-640988ea21f1",
+    "d3f5aefc-78e7-4f24-8689-40f6e3addb89"
+  ],
+  "relationships": []
+}

@@ -1,0 +1,198 @@
+{
+  "nodes": [
+    {
+      "id": "asset-internet-gw",
+      "node_type": "asset",
+      "label": "internet_gateway\n203.0.113.1",
+      "raw_label": "asset-internet-gw",
+      "criticality": 7.0,
+      "exploit_available": false,
+      "ip": "203.0.113.1",
+      "color": "#2E7D32"
+    },
+    {
+      "id": "CVE-2024-0001",
+      "node_type": "vuln",
+      "label": "CVE-2024-0001\nCVSS 6.5",
+      "cvss": 6.5,
+      "color": "#9E9E9E"
+    },
+    {
+      "id": "asset-web-01",
+      "node_type": "asset",
+      "label": "web_server\n10.0.1.10",
+      "raw_label": "asset-web-01",
+      "criticality": 8.0,
+      "exploit_available": true,
+      "ip": "10.0.1.10",
+      "color": "#D32F2F"
+    },
+    {
+      "id": "CVE-2024-1234",
+      "node_type": "vuln",
+      "label": "CVE-2024-1234\nCVSS 9.8",
+      "cvss": 9.8,
+      "color": "#9E9E9E"
+    },
+    {
+      "id": "asset-app-01",
+      "node_type": "asset",
+      "label": "app_server\n10.0.1.20",
+      "raw_label": "asset-app-01",
+      "criticality": 7.0,
+      "exploit_available": false,
+      "ip": "10.0.1.20",
+      "color": "#2E7D32"
+    },
+    {
+      "id": "CVE-2023-5678",
+      "node_type": "vuln",
+      "label": "CVE-2023-5678\nCVSS 7.1",
+      "cvss": 7.1,
+      "color": "#9E9E9E"
+    },
+    {
+      "id": "asset-db-01",
+      "node_type": "asset",
+      "label": "db_server\n10.0.1.30",
+      "raw_label": "asset-db-01",
+      "criticality": 10.0,
+      "exploit_available": true,
+      "ip": "10.0.1.30",
+      "color": "#D32F2F"
+    },
+    {
+      "id": "CVE-2022-9999",
+      "node_type": "vuln",
+      "label": "CVE-2022-9999\nCVSS 8.6",
+      "cvss": 8.6,
+      "color": "#9E9E9E"
+    },
+    {
+      "id": "asset-fileserver-01",
+      "node_type": "asset",
+      "label": "file_server\n10.0.2.50",
+      "raw_label": "asset-fileserver-01",
+      "criticality": 5.0,
+      "exploit_available": false,
+      "ip": "10.0.2.50",
+      "color": "#2E7D32"
+    },
+    {
+      "id": "CVE-2021-4242",
+      "node_type": "vuln",
+      "label": "CVE-2021-4242\nCVSS 6.9",
+      "cvss": 6.9,
+      "color": "#9E9E9E"
+    },
+    {
+      "id": "asset-admin-workstation",
+      "node_type": "asset",
+      "label": "workstation\n10.0.3.10",
+      "raw_label": "asset-admin-workstation",
+      "criticality": 9.0,
+      "exploit_available": true,
+      "ip": "10.0.3.10",
+      "color": "#D32F2F"
+    },
+    {
+      "id": "CVE-2020-1111",
+      "node_type": "vuln",
+      "label": "CVE-2020-1111\nCVSS 9.0",
+      "cvss": 9.0,
+      "color": "#9E9E9E"
+    }
+  ],
+  "edges": [
+    {
+      "source": "asset-internet-gw",
+      "target": "CVE-2024-0001",
+      "relation": "has_vulnerability",
+      "weight": 6.5
+    },
+    {
+      "source": "asset-internet-gw",
+      "target": "asset-web-01",
+      "relation": "connected_to",
+      "weight": 1.0
+    },
+    {
+      "source": "asset-web-01",
+      "target": "CVE-2024-1234",
+      "relation": "has_vulnerability",
+      "weight": 9.8
+    },
+    {
+      "source": "asset-web-01",
+      "target": "asset-app-01",
+      "relation": "connected_to",
+      "weight": 1.0
+    },
+    {
+      "source": "asset-web-01",
+      "target": "asset-db-01",
+      "relation": "connected_to",
+      "weight": 1.0
+    },
+    {
+      "source": "asset-app-01",
+      "target": "CVE-2023-5678",
+      "relation": "has_vulnerability",
+      "weight": 7.1
+    },
+    {
+      "source": "asset-app-01",
+      "target": "asset-db-01",
+      "relation": "connected_to",
+      "weight": 1.0
+    },
+    {
+      "source": "asset-app-01",
+      "target": "asset-fileserver-01",
+      "relation": "connected_to",
+      "weight": 1.0
+    },
+    {
+      "source": "asset-db-01",
+      "target": "CVE-2022-9999",
+      "relation": "has_vulnerability",
+      "weight": 8.6
+    },
+    {
+      "source": "asset-db-01",
+      "target": "asset-web-01",
+      "relation": "connected_to",
+      "weight": 1.0
+    },
+    {
+      "source": "asset-db-01",
+      "target": "asset-app-01",
+      "relation": "connected_to",
+      "weight": 1.0
+    },
+    {
+      "source": "asset-fileserver-01",
+      "target": "CVE-2021-4242",
+      "relation": "has_vulnerability",
+      "weight": 6.9
+    },
+    {
+      "source": "asset-fileserver-01",
+      "target": "asset-db-01",
+      "relation": "connected_to",
+      "weight": 1.0
+    },
+    {
+      "source": "asset-admin-workstation",
+      "target": "CVE-2020-1111",
+      "relation": "has_vulnerability",
+      "weight": 9.0
+    },
+    {
+      "source": "asset-admin-workstation",
+      "target": "asset-db-01",
+      "relation": "connected_to",
+      "weight": 1.0
+    }
+  ]
+}

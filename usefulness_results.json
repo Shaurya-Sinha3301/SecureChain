@@ -1,0 +1,18 @@
+{
+  "start_time": "2025-10-14T21:15:37.925082",
+  "scenarios": {
+    "threat_hunting": {
+      "ioc_searched": "192.168.1.100",
+      "indicators_found": 0,
+      "related_threats": [],
+      "recommendations": [
+        "IOC appears clean - continue monitoring",
+        "Consider adding to watchlist for future reference"
+      ]
+    }
+  },
+  "entities_created": 3,
+  "relationships_created": 0,
+  "success": false,
+  "error": "'threat_actors'"
+}

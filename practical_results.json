@@ -1,0 +1,85 @@
+{
+  "start_time": "2025-10-14T21:16:52.284541",
+  "scenarios": {
+    "ioc_reputation": {
+      "ioc": "192.168.1.100",
+      "type": "ip",
+      "is_malicious": false,
+      "confidence": 0,
+      "threat_types": [],
+      "associated_threats": [],
+      "description": "",
+      "first_seen": null
+    },
+    "bulk_analysis": [
+      {
+        "ioc": "192.168.1.100",
+        "type": "ip",
+        "is_malicious": false,
+        "confidence": 0,
+        "threat_types": [],
+        "associated_threats": [],
+        "description": "",
+        "first_seen": null
+      },
+      {
+        "ioc": "evil-domain.com",
+        "type": "domain",
+        "is_malicious": false,
+        "confidence": 0,
+        "threat_types": [],
+        "associated_threats": [],
+        "description": "",
+        "first_seen": null
+      },
+      {
+        "ioc": "d41d8cd98f00b204e9800998ecf8427e",
+        "type": "hash",
+        "is_malicious": false,
+        "confidence": 0,
+        "threat_types": [],
+        "associated_threats": [],
+        "description": "",
+        "first_seen": null
+      },
+      {
+        "ioc": "google.com",
+        "type": "domain",
+        "is_malicious": false,
+        "confidence": 0,
+        "threat_types": [],
+        "associated_threats": [],
+        "description": "",
+        "first_seen": null
+      },
+      {
+        "ioc": "8.8.8.8",
+        "type": "ip",
+        "is_malicious": false,
+        "confidence": 0,
+        "threat_types": [],
+        "associated_threats": [],
+        "description": "",
+        "first_seen": null
+      }
+    ],
+    "incident_enrichment": {
+      "incident_id": "INC-20251015-024652",
+      "iocs_analyzed": 3,
+      "threat_actors": "set()",
+      "malware_families": "set()",
+      "attack_patterns": "set()",
+      "confidence_scores": [],
+      "recommendations": []
+    },
+    "threat_hunting": {
+      "hunting_session_id": "HUNT-20251015-024652",
+      "iocs_investigated": 5,
+      "threats_identified": 0,
+      "false_positives": 5,
+      "hunting_effectiveness": 0.0,
+      "next_actions": []
+    }
+  },
+  "end_time": "2025-10-14T21:16:52.939045"
+}
