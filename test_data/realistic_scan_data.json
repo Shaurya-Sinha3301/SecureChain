@@ -1,0 +1,222 @@
+{
+  "scan_metadata": {
+    "scan_id": "test_scan_001",
+    "timestamp": "2024-01-15T10:30:00Z",
+    "scanner": "nmap",
+    "target_range": "192.168.1.0/24",
+    "scan_type": "comprehensive"
+  },
+  "hosts": {
+    "192.168.1.100": {
+      "hostname": [
+        {
+          "name": "web-server-dmz.company.local"
+        }
+      ],
+      "status": "up",
+      "ports": [
+        {
+          "portid": "80",
+          "protocol": "tcp",
+          "state": "open",
+          "service": {
+            "name": "http",
+            "product": "Apache httpd",
+            "version": "2.4.41",
+            "extrainfo": "(Ubuntu)"
+          },
+          "vulnerabilities": [
+            {
+              "cve": "CVE-2021-44228",
+              "cvss": 9.8,
+              "severity": "Critical",
+              "description": "Log4j Remote Code Execution",
+              "evidence": "Log4j library detected in web application logs"
+            }
+          ]
+        },
+        {
+          "portid": "443",
+          "protocol": "tcp",
+          "state": "open",
+          "service": {
+            "name": "https",
+            "product": "Apache httpd",
+            "version": "2.4.41"
+          },
+          "vulnerabilities": [
+            {
+              "cve": "CVE-2021-41773",
+              "cvss": 7.5,
+              "severity": "High",
+              "description": "Apache HTTP Server Path Traversal",
+              "evidence": "Vulnerable Apache version detected"
+            }
+          ]
+        },
+        {
+          "portid": "22",
+          "protocol": "tcp",
+          "state": "open",
+          "service": {
+            "name": "ssh",
+            "product": "OpenSSH",
+            "version": "7.4"
+          },
+          "vulnerabilities": [
+            {
+              "cve": "CVE-2018-15473",
+              "cvss": 5.3,
+              "severity": "Medium",
+              "description": "SSH User Enumeration",
+              "evidence": "SSH version vulnerable to user enumeration"
+            }
+          ]
+        }
+      ]
+    },
+    "192.168.1.200": {
+      "hostname": [
+        {
+          "name": "db-server-internal.company.local"
+        }
+      ],
+      "status": "up",
+      "ports": [
+        {
+          "portid": "3306",
+          "protocol": "tcp",
+          "state": "open",
+          "service": {
+            "name": "mysql",
+            "product": "MySQL",
+            "version": "5.7.30"
+          },
+          "vulnerabilities": [
+            {
+              "cve": "CVE-2020-14867",
+              "cvss": 7.5,
+              "severity": "High",
+              "description": "MySQL Privilege Escalation",
+              "evidence": "MySQL version with privilege escalation vulnerability"
+            }
+          ]
+        },
+        {
+          "portid": "22",
+          "protocol": "tcp",
+          "state": "open",
+          "service": {
+            "name": "ssh",
+            "product": "OpenSSH",
+            "version": "8.0"
+          }
+        }
+      ]
+    },
+    "192.168.1.150": {
+      "hostname": [
+        {
+          "name": "jump-server.company.local"
+        }
+      ],
+      "status": "up",
+      "ports": [
+        {
+          "portid": "22",
+          "protocol": "tcp",
+          "state": "open",
+          "service": {
+            "name": "ssh",
+            "product": "OpenSSH",
+            "version": "7.4"
+          },
+          "vulnerabilities": [
+            {
+              "cve": "CVE-2018-15473",
+              "cvss": 5.3,
+              "severity": "Medium",
+              "description": "SSH User Enumeration",
+              "evidence": "SSH version vulnerable to user enumeration"
+            }
+          ]
+        }
+      ]
+    },
+    "192.168.1.180": {
+      "hostname": [
+        {
+          "name": "file-server.company.local"
+        }
+      ],
+      "status": "up",
+      "ports": [
+        {
+          "portid": "21",
+          "protocol": "tcp",
+          "state": "open",
+          "service": {
+            "name": "ftp",
+            "product": "vsftpd",
+            "version": "2.3.4"
+          },
+          "vulnerabilities": [
+            {
+              "cve": "CVE-2011-2523",
+              "cvss": 10.0,
+              "severity": "Critical",
+              "description": "vsftpd Backdoor Command Execution",
+              "evidence": "Backdoored version of vsftpd detected"
+            }
+          ]
+        },
+        {
+          "portid": "445",
+          "protocol": "tcp",
+          "state": "open",
+          "service": {
+            "name": "microsoft-ds",
+            "product": "Microsoft Windows SMB"
+          },
+          "vulnerabilities": [
+            {
+              "cve": "CVE-2017-0144",
+              "cvss": 8.1,
+              "severity": "High",
+              "description": "EternalBlue SMB Vulnerability",
+              "evidence": "SMB service vulnerable to EternalBlue exploit"
+            }
+          ]
+        }
+      ]
+    },
+    "192.168.1.50": {
+      "hostname": [
+        {
+          "name": "admin-workstation.company.local"
+        }
+      ],
+      "status": "up",
+      "ports": [
+        {
+          "portid": "3389",
+          "protocol": "tcp",
+          "state": "open",
+          "service": {
+            "name": "ms-wbt-server",
+            "product": "Microsoft Terminal Services"
+          },
+          "vulnerabilities": [
+            {
+              "cve": "CVE-2019-0708",
+              "cvss": 9.8,
+              "severity": "Critical",
+              "description": "BlueKeep RDP Vulnerability",
+              "evidence": "RDP service vulnerable to BlueKeep exploit"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

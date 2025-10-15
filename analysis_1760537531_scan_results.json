@@ -1,0 +1,113 @@
+{
+  "target": "testphp.vulnweb.com",
+  "findings": [
+    {
+      "finding_id": "analysis_1760537531_vuln_001",
+      "target": "testphp.vulnweb.com",
+      "service": "http",
+      "port": 80,
+      "version": "Apache/2.4.41",
+      "cve": "CVE-2021-44228",
+      "cvss": 9.8,
+      "severity": "Critical",
+      "description": "Apache Log4j2 Remote Code Execution",
+      "evidence": "Log4j library detected in web application",
+      "category": "infrastructure",
+      "scan_timestamp": "2025-10-15T19:42:11.982753"
+    },
+    {
+      "finding_id": "analysis_1760537531_vuln_002",
+      "target": "testphp.vulnweb.com",
+      "service": "http",
+      "port": 80,
+      "version": "Apache/2.4.41",
+      "cve": "CVE-2021-41773",
+      "cvss": 7.5,
+      "severity": "High",
+      "description": "Apache HTTP Server Path Traversal",
+      "evidence": "Vulnerable Apache version detected",
+      "category": "infrastructure",
+      "scan_timestamp": "2025-10-15T19:42:11.982767"
+    },
+    {
+      "finding_id": "analysis_1760537531_vuln_003",
+      "target": "testphp.vulnweb.com",
+      "service": "https",
+      "port": 443,
+      "version": "Apache/2.4.41",
+      "cve": "CVE-2021-34527",
+      "cvss": 8.8,
+      "severity": "High",
+      "description": "SSL/TLS Configuration Issues",
+      "evidence": "Weak cipher suites detected",
+      "category": "infrastructure",
+      "scan_timestamp": "2025-10-15T19:42:11.982776"
+    },
+    {
+      "finding_id": "analysis_1760537531_vuln_004",
+      "target": "testphp.vulnweb.com",
+      "service": "ssh",
+      "port": 22,
+      "version": "OpenSSH 7.4",
+      "cve": "CVE-2018-15473",
+      "cvss": 5.3,
+      "severity": "Medium",
+      "description": "SSH User Enumeration",
+      "evidence": "SSH version vulnerable to user enumeration",
+      "category": "infrastructure",
+      "scan_timestamp": "2025-10-15T19:42:11.982782"
+    },
+    {
+      "finding_id": "analysis_1760537531_vuln_005",
+      "target": "testphp.vulnweb.com",
+      "service": "web_application",
+      "port": 80,
+      "vulnerability_type": "SQL Injection",
+      "cvss": 8.2,
+      "severity": "High",
+      "location": "/login.php",
+      "evidence": "SQL injection in login form parameter",
+      "category": "web_application",
+      "scan_timestamp": "2025-10-15T19:42:11.982802"
+    },
+    {
+      "finding_id": "analysis_1760537531_vuln_006",
+      "target": "testphp.vulnweb.com",
+      "service": "web_application",
+      "port": 80,
+      "vulnerability_type": "Cross-Site Scripting (XSS)",
+      "cvss": 6.1,
+      "severity": "Medium",
+      "location": "/search.php",
+      "evidence": "Reflected XSS in search parameter",
+      "category": "web_application",
+      "scan_timestamp": "2025-10-15T19:42:11.982810"
+    },
+    {
+      "finding_id": "analysis_1760537531_vuln_007",
+      "target": "testphp.vulnweb.com",
+      "service": "web_application",
+      "port": 80,
+      "vulnerability_type": "Insecure Direct Object Reference",
+      "cvss": 5.4,
+      "severity": "Medium",
+      "location": "/user/profile.php",
+      "evidence": "User ID parameter allows access to other profiles",
+      "category": "web_application",
+      "scan_timestamp": "2025-10-15T19:42:11.982816"
+    }
+  ],
+  "metadata": {
+    "phase": "vulnerability_scanning",
+    "status": "COMPLETED",
+    "start_time": "2025-10-15T19:42:11.982713",
+    "findings_count": 7,
+    "vulnerabilities_found": 4,
+    "severity_breakdown": {
+      "Critical": 1,
+      "High": 3,
+      "Medium": 3,
+      "Low": 0
+    }
+  }
+}

@@ -1,0 +1,523 @@
+{
+  "nodes": [
+    {
+      "id": "target_testphp.vulnweb.com",
+      "node_type": "target",
+      "hostname": "testphp.vulnweb.com",
+      "criticality": 10
+    },
+    {
+      "id": "analysis_1760537531_vuln_001",
+      "node_type": "vulnerability",
+      "cve": "CVE-2021-44228",
+      "severity": "Critical",
+      "cvss": 9.8,
+      "service": "http",
+      "port": 80,
+      "category": "infrastructure"
+    },
+    {
+      "id": "analysis_1760537531_vuln_002",
+      "node_type": "vulnerability",
+      "cve": "CVE-2021-41773",
+      "severity": "High",
+      "cvss": 7.5,
+      "service": "http",
+      "port": 80,
+      "category": "infrastructure"
+    },
+    {
+      "id": "analysis_1760537531_vuln_003",
+      "node_type": "vulnerability",
+      "cve": "CVE-2021-34527",
+      "severity": "High",
+      "cvss": 8.8,
+      "service": "https",
+      "port": 443,
+      "category": "infrastructure"
+    },
+    {
+      "id": "analysis_1760537531_vuln_004",
+      "node_type": "vulnerability",
+      "cve": "CVE-2018-15473",
+      "severity": "Medium",
+      "cvss": 5.3,
+      "service": "ssh",
+      "port": 22,
+      "category": "infrastructure"
+    },
+    {
+      "id": "analysis_1760537531_vuln_005",
+      "node_type": "vulnerability",
+      "cve": "",
+      "severity": "High",
+      "cvss": 8.2,
+      "service": "web_application",
+      "port": 80,
+      "category": "web_application"
+    },
+    {
+      "id": "analysis_1760537531_vuln_006",
+      "node_type": "vulnerability",
+      "cve": "",
+      "severity": "Medium",
+      "cvss": 6.1,
+      "service": "web_application",
+      "port": 80,
+      "category": "web_application"
+    },
+    {
+      "id": "analysis_1760537531_vuln_007",
+      "node_type": "vulnerability",
+      "cve": "",
+      "severity": "Medium",
+      "cvss": 5.4,
+      "service": "web_application",
+      "port": 80,
+      "category": "web_application"
+    }
+  ],
+  "edges": [
+    {
+      "source": "analysis_1760537531_vuln_001",
+      "target": "target_testphp.vulnweb.com",
+      "relationship": "affects",
+      "weight": 0.9800000000000001
+    },
+    {
+      "source": "analysis_1760537531_vuln_001",
+      "target": "analysis_1760537531_vuln_002",
+      "relationship": "attack_path",
+      "attack_type": "exploit_chain",
+      "probability": 0.8,
+      "weight": 0.8
+    },
+    {
+      "source": "analysis_1760537531_vuln_001",
+      "target": "analysis_1760537531_vuln_003",
+      "relationship": "attack_path",
+      "attack_type": "exploit_chain",
+      "probability": 0.8,
+      "weight": 0.8
+    },
+    {
+      "source": "analysis_1760537531_vuln_001",
+      "target": "analysis_1760537531_vuln_004",
+      "relationship": "attack_path",
+      "attack_type": "lateral_movement",
+      "probability": 0.6,
+      "weight": 0.6
+    },
+    {
+      "source": "analysis_1760537531_vuln_001",
+      "target": "analysis_1760537531_vuln_005",
+      "relationship": "attack_path",
+      "attack_type": "exploit_chain",
+      "probability": 0.8,
+      "weight": 0.8
+    },
+    {
+      "source": "analysis_1760537531_vuln_002",
+      "target": "target_testphp.vulnweb.com",
+      "relationship": "affects",
+      "weight": 0.75
+    },
+    {
+      "source": "analysis_1760537531_vuln_002",
+      "target": "analysis_1760537531_vuln_001",
+      "relationship": "attack_path",
+      "attack_type": "lateral_movement",
+      "probability": 0.6,
+      "weight": 0.6
+    },
+    {
+      "source": "analysis_1760537531_vuln_002",
+      "target": "analysis_1760537531_vuln_003",
+      "relationship": "attack_path",
+      "attack_type": "lateral_movement",
+      "probability": 0.6,
+      "weight": 0.6
+    },
+    {
+      "source": "analysis_1760537531_vuln_002",
+      "target": "analysis_1760537531_vuln_004",
+      "relationship": "attack_path",
+      "attack_type": "exploit_chain",
+      "probability": 0.6,
+      "weight": 0.6
+    },
+    {
+      "source": "analysis_1760537531_vuln_002",
+      "target": "analysis_1760537531_vuln_006",
+      "relationship": "attack_path",
+      "attack_type": "exploit_chain",
+      "probability": 0.6,
+      "weight": 0.6
+    },
+    {
+      "source": "analysis_1760537531_vuln_002",
+      "target": "analysis_1760537531_vuln_007",
+      "relationship": "attack_path",
+      "attack_type": "exploit_chain",
+      "probability": 0.6,
+      "weight": 0.6
+    },
+    {
+      "source": "analysis_1760537531_vuln_003",
+      "target": "target_testphp.vulnweb.com",
+      "relationship": "affects",
+      "weight": 0.8800000000000001
+    },
+    {
+      "source": "analysis_1760537531_vuln_003",
+      "target": "analysis_1760537531_vuln_001",
+      "relationship": "attack_path",
+      "attack_type": "lateral_movement",
+      "probability": 0.6,
+      "weight": 0.6
+    },
+    {
+      "source": "analysis_1760537531_vuln_003",
+      "target": "analysis_1760537531_vuln_002",
+      "relationship": "attack_path",
+      "attack_type": "lateral_movement",
+      "probability": 0.6,
+      "weight": 0.6
+    },
+    {
+      "source": "analysis_1760537531_vuln_003",
+      "target": "analysis_1760537531_vuln_004",
+      "relationship": "attack_path",
+      "attack_type": "exploit_chain",
+      "probability": 0.6,
+      "weight": 0.6
+    },
+    {
+      "source": "analysis_1760537531_vuln_003",
+      "target": "analysis_1760537531_vuln_006",
+      "relationship": "attack_path",
+      "attack_type": "exploit_chain",
+      "probability": 0.6,
+      "weight": 0.6
+    },
+    {
+      "source": "analysis_1760537531_vuln_003",
+      "target": "analysis_1760537531_vuln_007",
+      "relationship": "attack_path",
+      "attack_type": "exploit_chain",
+      "probability": 0.6,
+      "weight": 0.6
+    },
+    {
+      "source": "analysis_1760537531_vuln_004",
+      "target": "target_testphp.vulnweb.com",
+      "relationship": "affects",
+      "weight": 0.53
+    },
+    {
+      "source": "analysis_1760537531_vuln_004",
+      "target": "analysis_1760537531_vuln_001",
+      "relationship": "attack_path",
+      "attack_type": "lateral_movement",
+      "probability": 0.6,
+      "weight": 0.6
+    },
+    {
+      "source": "analysis_1760537531_vuln_004",
+      "target": "analysis_1760537531_vuln_002",
+      "relationship": "attack_path",
+      "attack_type": "lateral_movement",
+      "probability": 0.6,
+      "weight": 0.6
+    },
+    {
+      "source": "analysis_1760537531_vuln_004",
+      "target": "analysis_1760537531_vuln_003",
+      "relationship": "attack_path",
+      "attack_type": "lateral_movement",
+      "probability": 0.6,
+      "weight": 0.6
+    },
+    {
+      "source": "analysis_1760537531_vuln_005",
+      "target": "target_testphp.vulnweb.com",
+      "relationship": "affects",
+      "weight": 0.82
+    },
+    {
+      "source": "analysis_1760537531_vuln_005",
+      "target": "analysis_1760537531_vuln_001",
+      "relationship": "attack_path",
+      "attack_type": "privilege_escalation",
+      "probability": 0.7,
+      "weight": 0.7
+    },
+    {
+      "source": "analysis_1760537531_vuln_005",
+      "target": "analysis_1760537531_vuln_002",
+      "relationship": "attack_path",
+      "attack_type": "privilege_escalation",
+      "probability": 0.7,
+      "weight": 0.7
+    },
+    {
+      "source": "analysis_1760537531_vuln_005",
+      "target": "analysis_1760537531_vuln_003",
+      "relationship": "attack_path",
+      "attack_type": "privilege_escalation",
+      "probability": 0.7,
+      "weight": 0.7
+    },
+    {
+      "source": "analysis_1760537531_vuln_005",
+      "target": "analysis_1760537531_vuln_004",
+      "relationship": "attack_path",
+      "attack_type": "exploit_chain",
+      "probability": 0.6,
+      "weight": 0.6
+    },
+    {
+      "source": "analysis_1760537531_vuln_005",
+      "target": "analysis_1760537531_vuln_006",
+      "relationship": "attack_path",
+      "attack_type": "exploit_chain",
+      "probability": 0.6,
+      "weight": 0.6
+    },
+    {
+      "source": "analysis_1760537531_vuln_005",
+      "target": "analysis_1760537531_vuln_007",
+      "relationship": "attack_path",
+      "attack_type": "exploit_chain",
+      "probability": 0.6,
+      "weight": 0.6
+    },
+    {
+      "source": "analysis_1760537531_vuln_006",
+      "target": "target_testphp.vulnweb.com",
+      "relationship": "affects",
+      "weight": 0.61
+    },
+    {
+      "source": "analysis_1760537531_vuln_006",
+      "target": "analysis_1760537531_vuln_001",
+      "relationship": "attack_path",
+      "attack_type": "privilege_escalation",
+      "probability": 0.7,
+      "weight": 0.7
+    },
+    {
+      "source": "analysis_1760537531_vuln_006",
+      "target": "analysis_1760537531_vuln_002",
+      "relationship": "attack_path",
+      "attack_type": "privilege_escalation",
+      "probability": 0.7,
+      "weight": 0.7
+    },
+    {
+      "source": "analysis_1760537531_vuln_006",
+      "target": "analysis_1760537531_vuln_003",
+      "relationship": "attack_path",
+      "attack_type": "privilege_escalation",
+      "probability": 0.7,
+      "weight": 0.7
+    },
+    {
+      "source": "analysis_1760537531_vuln_006",
+      "target": "analysis_1760537531_vuln_004",
+      "relationship": "attack_path",
+      "attack_type": "privilege_escalation",
+      "probability": 0.7,
+      "weight": 0.7
+    },
+    {
+      "source": "analysis_1760537531_vuln_007",
+      "target": "target_testphp.vulnweb.com",
+      "relationship": "affects",
+      "weight": 0.54
+    },
+    {
+      "source": "analysis_1760537531_vuln_007",
+      "target": "analysis_1760537531_vuln_001",
+      "relationship": "attack_path",
+      "attack_type": "privilege_escalation",
+      "probability": 0.7,
+      "weight": 0.7
+    },
+    {
+      "source": "analysis_1760537531_vuln_007",
+      "target": "analysis_1760537531_vuln_002",
+      "relationship": "attack_path",
+      "attack_type": "privilege_escalation",
+      "probability": 0.7,
+      "weight": 0.7
+    },
+    {
+      "source": "analysis_1760537531_vuln_007",
+      "target": "analysis_1760537531_vuln_003",
+      "relationship": "attack_path",
+      "attack_type": "privilege_escalation",
+      "probability": 0.7,
+      "weight": 0.7
+    },
+    {
+      "source": "analysis_1760537531_vuln_007",
+      "target": "analysis_1760537531_vuln_004",
+      "relationship": "attack_path",
+      "attack_type": "privilege_escalation",
+      "probability": 0.7,
+      "weight": 0.7
+    }
+  ],
+  "attack_paths": [
+    {
+      "entry_point": "analysis_1760537531_vuln_001",
+      "target": "target_testphp.vulnweb.com",
+      "path": [
+        "analysis_1760537531_vuln_001",
+        "target_testphp.vulnweb.com"
+      ],
+      "length": 1,
+      "risk_score": 0.9800000000000001,
+      "description": "Exploit http vulnerability (CVE-2021-44228) - Critical \u2192 Compromise testphp.vulnweb.com"
+    },
+    {
+      "entry_point": "analysis_1760537531_vuln_003",
+      "target": "target_testphp.vulnweb.com",
+      "path": [
+        "analysis_1760537531_vuln_003",
+        "target_testphp.vulnweb.com"
+      ],
+      "length": 1,
+      "risk_score": 0.8800000000000001,
+      "description": "Exploit https vulnerability (CVE-2021-34527) - High \u2192 Compromise testphp.vulnweb.com"
+    },
+    {
+      "entry_point": "analysis_1760537531_vuln_001",
+      "target": "target_testphp.vulnweb.com",
+      "path": [
+        "analysis_1760537531_vuln_001",
+        "analysis_1760537531_vuln_003",
+        "target_testphp.vulnweb.com"
+      ],
+      "length": 2,
+      "risk_score": 0.8400000000000001,
+      "description": "Exploit http vulnerability (CVE-2021-44228) - Critical \u2192 Exploit https vulnerability (CVE-2021-34527) - High \u2192 Compromise testphp.vulnweb.com"
+    },
+    {
+      "entry_point": "analysis_1760537531_vuln_005",
+      "target": "target_testphp.vulnweb.com",
+      "path": [
+        "analysis_1760537531_vuln_005",
+        "analysis_1760537531_vuln_001",
+        "target_testphp.vulnweb.com"
+      ],
+      "length": 2,
+      "risk_score": 0.8400000000000001,
+      "description": "Exploit web_application vulnerability () - High \u2192 Exploit http vulnerability (CVE-2021-44228) - Critical \u2192 Compromise testphp.vulnweb.com"
+    },
+    {
+      "entry_point": "analysis_1760537531_vuln_006",
+      "target": "target_testphp.vulnweb.com",
+      "path": [
+        "analysis_1760537531_vuln_006",
+        "analysis_1760537531_vuln_001",
+        "target_testphp.vulnweb.com"
+      ],
+      "length": 2,
+      "risk_score": 0.8400000000000001,
+      "description": "Exploit web_application vulnerability () - Medium \u2192 Exploit http vulnerability (CVE-2021-44228) - Critical \u2192 Compromise testphp.vulnweb.com"
+    },
+    {
+      "entry_point": "analysis_1760537531_vuln_007",
+      "target": "target_testphp.vulnweb.com",
+      "path": [
+        "analysis_1760537531_vuln_007",
+        "analysis_1760537531_vuln_001",
+        "target_testphp.vulnweb.com"
+      ],
+      "length": 2,
+      "risk_score": 0.8400000000000001,
+      "description": "Exploit web_application vulnerability () - Medium \u2192 Exploit http vulnerability (CVE-2021-44228) - Critical \u2192 Compromise testphp.vulnweb.com"
+    },
+    {
+      "entry_point": "analysis_1760537531_vuln_005",
+      "target": "target_testphp.vulnweb.com",
+      "path": [
+        "analysis_1760537531_vuln_005",
+        "target_testphp.vulnweb.com"
+      ],
+      "length": 1,
+      "risk_score": 0.82,
+      "description": "Exploit web_application vulnerability () - High \u2192 Compromise testphp.vulnweb.com"
+    },
+    {
+      "entry_point": "analysis_1760537531_vuln_001",
+      "target": "target_testphp.vulnweb.com",
+      "path": [
+        "analysis_1760537531_vuln_001",
+        "analysis_1760537531_vuln_005",
+        "target_testphp.vulnweb.com"
+      ],
+      "length": 2,
+      "risk_score": 0.81,
+      "description": "Exploit http vulnerability (CVE-2021-44228) - Critical \u2192 Exploit web_application vulnerability () - High \u2192 Compromise testphp.vulnweb.com"
+    },
+    {
+      "entry_point": "analysis_1760537531_vuln_001",
+      "target": "target_testphp.vulnweb.com",
+      "path": [
+        "analysis_1760537531_vuln_001",
+        "analysis_1760537531_vuln_005",
+        "analysis_1760537531_vuln_003",
+        "target_testphp.vulnweb.com"
+      ],
+      "length": 3,
+      "risk_score": 0.7933333333333333,
+      "description": "Exploit http vulnerability (CVE-2021-44228) - Critical \u2192 Exploit web_application vulnerability () - High \u2192 Exploit https vulnerability (CVE-2021-34527) - High \u2192 Compromise testphp.vulnweb.com"
+    },
+    {
+      "entry_point": "analysis_1760537531_vuln_005",
+      "target": "target_testphp.vulnweb.com",
+      "path": [
+        "analysis_1760537531_vuln_005",
+        "analysis_1760537531_vuln_001",
+        "analysis_1760537531_vuln_003",
+        "target_testphp.vulnweb.com"
+      ],
+      "length": 3,
+      "risk_score": 0.7933333333333333,
+      "description": "Exploit web_application vulnerability () - High \u2192 Exploit http vulnerability (CVE-2021-44228) - Critical \u2192 Exploit https vulnerability (CVE-2021-34527) - High \u2192 Compromise testphp.vulnweb.com"
+    }
+  ],
+  "risk_assessment": {
+    "overall_risk_score": 0.6785714285714286,
+    "severity_breakdown": {
+      "Critical": 1,
+      "High": 3,
+      "Medium": 3,
+      "Low": 0
+    },
+    "total_vulnerabilities": 7,
+    "attack_paths_count": 10,
+    "highest_risk_path": {
+      "entry_point": "analysis_1760537531_vuln_001",
+      "target": "target_testphp.vulnweb.com",
+      "path": [
+        "analysis_1760537531_vuln_001",
+        "target_testphp.vulnweb.com"
+      ],
+      "length": 1,
+      "risk_score": 0.9800000000000001,
+      "description": "Exploit http vulnerability (CVE-2021-44228) - Critical \u2192 Compromise testphp.vulnweb.com"
+    },
+    "recommendations": [
+      "URGENT: Address 1 critical vulnerabilities immediately",
+      "High Priority: Remediate 3 high-severity vulnerabilities",
+      "Critical: Update Log4j library to latest version (Log4Shell vulnerability)",
+      "Web Security: Address 3 web application vulnerabilities",
+      "Implement regular vulnerability scanning and patch management",
+      "Consider network segmentation to limit attack paths"
+    ]
+  }
+}

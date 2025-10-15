@@ -1,0 +1,128 @@
+[
+  {
+    "scenario_id": "web_to_db_lateral_movement",
+    "name": "Web Server to Database Lateral Movement",
+    "description": "Attacker exploits web server vulnerability to gain access to internal database",
+    "attack_chain": [
+      {
+        "step": 1,
+        "action": "Initial Access",
+        "target": "192.168.1.100",
+        "technique": "T1190",
+        "vulnerability": "CVE-2021-44228",
+        "description": "Exploit Log4j vulnerability in web application"
+      },
+      {
+        "step": 2,
+        "action": "Discovery",
+        "target": "192.168.1.100",
+        "technique": "T1018",
+        "description": "Network discovery to identify internal systems"
+      },
+      {
+        "step": 3,
+        "action": "Lateral Movement",
+        "target": "192.168.1.200",
+        "technique": "T1021.004",
+        "description": "SSH to database server using compromised credentials"
+      },
+      {
+        "step": 4,
+        "action": "Privilege Escalation",
+        "target": "192.168.1.200",
+        "technique": "T1068",
+        "vulnerability": "CVE-2020-14867",
+        "description": "Exploit MySQL privilege escalation vulnerability"
+      },
+      {
+        "step": 5,
+        "action": "Data Exfiltration",
+        "target": "192.168.1.200",
+        "technique": "T1041",
+        "description": "Exfiltrate sensitive database contents"
+      }
+    ],
+    "impact": "High",
+    "likelihood": "High",
+    "risk_score": 9.2
+  },
+  {
+    "scenario_id": "rdp_admin_compromise",
+    "name": "RDP Admin Workstation Compromise",
+    "description": "Direct compromise of admin workstation via BlueKeep vulnerability",
+    "attack_chain": [
+      {
+        "step": 1,
+        "action": "Initial Access",
+        "target": "192.168.1.50",
+        "technique": "T1021.001",
+        "vulnerability": "CVE-2019-0708",
+        "description": "Exploit BlueKeep RDP vulnerability"
+      },
+      {
+        "step": 2,
+        "action": "Persistence",
+        "target": "192.168.1.50",
+        "technique": "T1547.001",
+        "description": "Create registry run key for persistence"
+      },
+      {
+        "step": 3,
+        "action": "Credential Access",
+        "target": "192.168.1.50",
+        "technique": "T1003.001",
+        "description": "Dump LSASS memory for credentials"
+      },
+      {
+        "step": 4,
+        "action": "Domain Enumeration",
+        "target": "192.168.1.50",
+        "technique": "T1087.002",
+        "description": "Enumerate domain users and groups"
+      }
+    ],
+    "impact": "Critical",
+    "likelihood": "Medium",
+    "risk_score": 8.5
+  },
+  {
+    "scenario_id": "ftp_smb_worm_propagation",
+    "name": "FTP to SMB Worm Propagation",
+    "description": "Worm-like propagation from FTP backdoor to SMB vulnerability",
+    "attack_chain": [
+      {
+        "step": 1,
+        "action": "Initial Access",
+        "target": "192.168.1.180",
+        "technique": "T1190",
+        "vulnerability": "CVE-2011-2523",
+        "description": "Exploit vsftpd backdoor"
+      },
+      {
+        "step": 2,
+        "action": "Network Scanning",
+        "target": "192.168.1.0/24",
+        "technique": "T1046",
+        "description": "Scan network for SMB services"
+      },
+      {
+        "step": 3,
+        "action": "Lateral Movement",
+        "target": "192.168.1.180",
+        "technique": "T1021.002",
+        "vulnerability": "CVE-2017-0144",
+        "description": "Exploit EternalBlue SMB vulnerability"
+      },
+      {
+        "step": 4,
+        "action": "Propagation",
+        "target": "Multiple",
+        "technique": "T1570",
+        "description": "Self-replicate to other vulnerable systems"
+      }
+    ],
+    "impact": "High",
+    "likelihood": "Medium",
+    "risk_score": 7.8
+  }
+]

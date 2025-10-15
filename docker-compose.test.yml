@@ -1,0 +1,25 @@
+services:
+  mysql-db:
+    environment:
+      MYSQL_DATABASE: testdb
+      MYSQL_ROOT_PASSWORD: password
+    image: mysql:5.7.30
+    ports:
+    - 3306:3306
+  vulnerable-ftp:
+    image: metasploitable/vsftpd
+    ports:
+    - '2121:21'
+  vulnerable-ssh:
+    image: vulnerables/ssh-audit-test
+    ports:
+    - '2222:22'
+  vulnerable-web:
+    environment:
+      MYSQL_DATABASE: dvwa
+      MYSQL_PASSWORD: password
+      MYSQL_USER: dvwa
+    image: vulnerables/web-dvwa
+    ports:
+    - 8080:80
+version: '3.8'

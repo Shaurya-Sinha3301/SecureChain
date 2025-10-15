@@ -1,18 +1,40 @@
-# FastAPI Backend Dependencies
+# SecureChain Backend Requirements
+
+# FastAPI and web framework
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
-pydantic==2.5.0
 python-multipart==0.0.6
 
-# Basic Dependencies
-numpy>=1.21.0
-pandas>=1.5.0
-requests>=2.28.0
+# Database drivers
+sqlalchemy==2.0.23
+psycopg2-binary==2.9.9
+neo4j==5.15.0
 
-# Utility Dependencies
-python-dotenv>=1.0.0
+# HTTP client for OpenCTI
+requests==2.31.0
+httpx==0.25.2
 
-# Optional GPU Support (uncomment if using CUDA)
-# torch>=2.0.0+cu118
-# torchvision>=0.15.0+cu118
-# torchaudio>=2.0.0+cu118
+# Data processing
+pydantic==2.5.0
+python-dotenv==1.0.0
+
+# Logging and monitoring
+structlog==23.2.0
+
+# Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# Background tasks
+celery==5.3.4
+redis==5.0.1
+
+# Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+httpx==0.25.2
+
+# Development
+black==23.11.0
+flake8==6.1.0
+mypy==1.7.1

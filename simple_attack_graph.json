@@ -1,0 +1,63 @@
+{
+  "nodes": [
+    {
+      "id": "asset_192.168.1.100",
+      "node_type": "asset",
+      "ip": "192.168.1.100",
+      "hostname": "web-server-01",
+      "asset_type": "web_server",
+      "criticality": 9
+    },
+    {
+      "id": "vuln_web_001",
+      "node_type": "vulnerability",
+      "cve": "CVE-2021-44228",
+      "cvss": 9.8,
+      "severity": "Critical",
+      "service": "http"
+    },
+    {
+      "id": "asset_192.168.1.200",
+      "node_type": "asset",
+      "ip": "192.168.1.200",
+      "hostname": "db-server-01",
+      "asset_type": "database_server",
+      "criticality": 10
+    },
+    {
+      "id": "vuln_db_001",
+      "node_type": "vulnerability",
+      "cve": "CVE-2020-14867",
+      "cvss": 7.5,
+      "severity": "High",
+      "service": "mysql"
+    }
+  ],
+  "edges": [
+    {
+      "source": "vuln_web_001",
+      "target": "asset_192.168.1.100",
+      "relationship": "affects",
+      "weight": 0.9800000000000001
+    },
+    {
+      "source": "vuln_web_001",
+      "target": "vuln_db_001",
+      "relationship": "attack_path",
+      "attack_type": "lateral_movement",
+      "probability": 0.8
+    },
+    {
+      "source": "vuln_db_001",
+      "target": "asset_192.168.1.200",
+      "relationship": "affects",
+      "weight": 0.75
+    }
+  ],
+  "statistics": {
+    "nodes": 4,
+    "edges": 3,
+    "assets": 2,
+    "vulnerabilities": 2
+  }
+}

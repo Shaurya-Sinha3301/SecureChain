@@ -1,332 +1,806 @@
+#!/usr/bin/env python3
 """
-attack_graph_beautiful.py
-
-Polished Attack Graph generator:
- - Interactive HTML (PyVis) with beautiful style & tooltips
- - Static SVG + PNG with rounded rectangular nodes and legend
- - Exports: top_attack_paths.csv, attack_graph.json
-
-Usage:
-    pip install networkx pyvis pandas matplotlib
-    python attack_graph_beautiful.py
-
-Config at the top of the file.
+Advanced Attack Graph Generator using NetworkX
+Creates sophisticated attack graphs with MITRE ATT&CK mapping and risk analysis
 """
 
 import json
-import os
-from math import sqrt
-from typing import List, Dict, Any
-
 import networkx as nx
-import pandas as pd
-from pyvis.network import Network
 import matplotlib.pyplot as plt
-from matplotlib.patches import FancyBboxPatch, FancyArrowPatch, Patch
-from matplotlib.collections import PatchCollection
+import matplotlib.patches as mpatches
+import numpy as np
+import pandas as pd
+from typing import Dict, List, Tuple, Any
+from pathlib import Path
+import logging
+from datetime import datetime
+import plotly.graph_objects as go
+import plotly.express as px
+from plotly.subplots import make_subplots
 
-# ------------------ CONFIG ------------------
-INPUT_FILE = "sample_scan.json"
-OUT_HTML = "attack_graph_beautiful.html"
-OUT_SVG = "attack_graph_beautiful.svg"
-OUT_PNG = "attack_graph_beautiful.png"
-OUT_PATHS_CSV = "top_attack_paths.csv"
-OUT_GRAPH_JSON = "attack_graph.json"
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-MAX_PATH_DEPTH = 4
-TOP_K_PATHS = 10
-FIGSIZE = (14, 10)
-# --------------------------------------------
-
-# ---------- Utilities ----------
-def load_scan(path: str) -> List[Dict[str, Any]]:
-    if not os.path.exists(path):
-        raise FileNotFoundError(f"Input file '{path}' not found.")
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
-
-
-def save_json(obj, path: str):
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(obj, f, indent=2)
-    print(f"Saved JSON to {path}")
-
-
-# ---------- Graph Construction ----------
-def build_graph(records: List[Dict[str, Any]]) -> nx.DiGraph:
-    G = nx.DiGraph()
-
-    for r in records:
-        asset = r["asset_id"]
-        asset_label = f"{r.get('asset_type','asset')}\n{r.get('ip','')}"
-        critical = float(r.get("asset_criticality", 5))
-        exploitable = bool(r.get("exploit_available", False))
-        color = "#D32F2F" if exploitable else "#2E7D32"  # red or green
-        G.add_node(asset, node_type="asset", label=asset_label, raw_label=asset, criticality=critical,
-                   exploit_available=exploitable, ip=r.get("ip", ""), color=color)
-
-        # Vulnerability node id prefers cve_id else vuln_id
-        vuln_node = r.get("cve_id") or r.get("vuln_id") or f"{asset}_vuln"
-        vuln_label = f"{vuln_node}\nCVSS {r.get('cvss', '')}"
-        if not G.has_node(vuln_node):
-            G.add_node(vuln_node, node_type="vuln", label=vuln_label, cvss=float(r.get("cvss", 0)),
-                       color="#9E9E9E")
-
-        G.add_edge(asset, vuln_node, relation="has_vulnerability", weight=float(r.get("cvss", 0)))
-
-    # Add connectivity edges: use explicit connected_to if present else /24 heuristic
-    assets_by_ip = {r["asset_id"]: r["ip"] for r in records}
-    for r in records:
-        src = r["asset_id"]
-        conns = r.get("connected_to", [])
-        if not conns:
-            # /24 heuristic
-            prefix = ".".join(r.get("ip", "").split(".")[:3])
-            conns = [aid for aid, ip in assets_by_ip.items() if aid != src and ip.startswith(prefix)]
-        for tgt in conns:
-            if tgt in G.nodes and not G.has_edge(src, tgt):
-                G.add_edge(src, tgt, relation="connected_to", weight=1.0)
-
-    return G
-
-
-# ---------- Attack Path Computation ----------
-def compute_attack_paths(G: nx.DiGraph, entry_points: List[str], targets: List[str],
-                         max_depth: int = 4, top_k: int = 10) -> List[Dict[str, Any]]:
-    paths = []
-    for src in entry_points:
-        for tgt in targets:
-            try:
-                for path in nx.all_simple_paths(G, source=src, target=tgt, cutoff=max_depth):
-                    # compute edge normalized weights (cvss->0..1)
-                    edge_norms = []
-                    for u, v in zip(path[:-1], path[1:]):
-                        w = G[u][v].get("weight", 1.0)
-                        norm = min(1.0, max(0.01, float(w) / 10.0))
-                        edge_norms.append(norm)
-                    path_prob = 1.0
-                    for p in edge_norms:
-                        path_prob *= p
-                    target_crit = G.nodes[path[-1]].get("criticality", 5) / 10.0 if G.nodes[path[-1]].get(
-                        "node_type") == "asset" else 0.5
-                    penalty = 1.0 / max(1, len(path))
-                    score = path_prob * (0.65 * target_crit + 0.35 * penalty)
-                    paths.append({"source": src, "target": tgt, "path": path, "score": score, "len": len(path)})
-            except nx.NetworkXNoPath:
-                pass
-    paths = sorted(paths, key=lambda x: -x["score"])[:top_k]
-    return paths
-
-
-# ---------- Exports ----------
-def export_top_paths(paths: List[Dict[str, Any]], path_csv: str):
-    rows = []
-    for i, p in enumerate(paths, 1):
-        rows.append({
-            "rank": i,
-            "source": p["source"],
-            "target": p["target"],
-            "path": " -> ".join(p["path"]),
-            "score": p["score"],
-            "path_length": p["len"]
-        })
-    df = pd.DataFrame(rows)
-    df.to_csv(path_csv, index=False)
-    print(f"Saved top paths CSV to {path_csv}")
-
-
-def export_graph_json(G: nx.DiGraph, out_json: str):
-    j = {"nodes": [], "edges": []}
-    for n, d in G.nodes(data=True):
-        j["nodes"].append({"id": n, **d})
-    for u, v, d in G.edges(data=True):
-        j["edges"].append({"source": u, "target": v, **d})
-    save_json(j, out_json)
-
-
-# ---------- Interactive HTML (pyvis) ----------
-def create_interactive_html(G: nx.DiGraph, out_html: str, title: str = "Attack Graph"):
-    net = Network(height="800px", width="100%", directed=True, bgcolor="#ffffff", font_color="#222222")
-
-    # Set physics + nice options for vis.js
-    net.set_options("""
-    var options = {
-      "nodes": {
-        "borderWidth": 1,
-        "font": {"size": 14, "face": "Arial"},
-        "shapeProperties": {"borderRadius": 8}
-      },
-      "edges": {
-        "color": {"inherit": true},
-        "smooth": {"enabled": true, "type": "cubicBezier"}
-      },
-      "physics": {
-        "barnesHut": {
-          "gravitationalConstant": -16000,
-          "centralGravity": 0.3,
-          "springLength": 200,
-          "springConstant": 0.05,
-          "damping": 0.09
-        },
-        "minVelocity": 0.75
-      }
-    }
-    """)
-
-    # Add nodes (size by criticality for assets, smaller for vuln)
-    for n, d in G.nodes(data=True):
-        label = d.get("label", n)
-        node_type = d.get("node_type", "asset")
-        if node_type == "asset":
-            crit = float(d.get("criticality", 5))
-            size = 18 + (crit / 10.0) * 30  # 18..48
-            title = f"<b>{d.get('raw_label', n)}</b><br>Type: {d.get('asset_type','') or ''}<br>IP: {d.get('ip','')}<br>Criticality: {crit}<br>Exploit available: {d.get('exploit_available')}"
-            shape = "box"
-        else:
-            size = 14
-            title = f"<b>{label}</b><br>CVSS: {d.get('cvss', '')}"
-            shape = "box"
-        net.add_node(n, label=label, title=title, color=d.get("color", "#1f78b4"), shape=shape, size=size)
-
-    # Add edges (thickness by weight)
-    for u, v, d in G.edges(data=True):
-        rel = d.get("relation", "")
-        w = d.get("weight", 1.0)
-        width = 1 + (w / 10.0) * 4  # 1..5
-        color = "#FFB74D" if rel == "has_vulnerability" else "#64B5F6"
-        net.add_edge(u, v, label=rel, title=f"{rel} (w={w})", color=color, width=width, arrows="to")
-
-    net.heading = title
-    # net.show_buttons(filter_=['nodes', 'physics'])  # <- remove or comment out
-    net.write_html(out_html)
-    print(f"Interactive HTML written to {out_html}")
-
+class AttackGraphGenerator:
+    """Advanced attack graph generator with NetworkX"""
     
-
-# ---------- Static SVG/PNG drawing ----------
-def draw_static_graph(G: nx.DiGraph, out_svg: str, out_png: str, figsize=(14, 10)):
-    plt.figure(figsize=figsize)
-    ax = plt.gca()
-    ax.set_facecolor("white")
-    pos = nx.spring_layout(G, seed=42, k=0.6)
-
-    # We'll create rounded rectangles (FancyBboxPatch) for nodes
-    node_patches = []
-    node_texts = []
-    arrow_patches = []
-
-    # Determine node sizes in figure coordinates
-    # Convert positions to plot coords (they are already data coords)
-    for n, d in G.nodes(data=True):
-        x, y = pos[n]
-        node_type = d.get("node_type", "asset")
-        if node_type == "asset":
-            crit = float(d.get("criticality", 5))
-            width = 0.18 + (crit / 10.0) * 0.30  # width relative to axes
-            height = 0.08 + (crit / 10.0) * 0.12
-            facecolor = d.get("color", "#4CAF50")
+    def __init__(self):
+        self.graph = nx.DiGraph()
+        self.mitre_mapping = self._load_mitre_mapping()
+        self.risk_weights = {
+            'Critical': 1.0,
+            'High': 0.8,
+            'Medium': 0.6,
+            'Low': 0.3
+        }
+        
+    def _load_mitre_mapping(self) -> Dict:
+        """Load MITRE ATT&CK technique mappings"""
+        return {
+            'ssh': {'technique': 'T1021.004', 'name': 'Remote Services: SSH'},
+            'http': {'technique': 'T1190', 'name': 'Exploit Public-Facing Application'},
+            'https': {'technique': 'T1190', 'name': 'Exploit Public-Facing Application'},
+            'ftp': {'technique': 'T1021.002', 'name': 'Remote Services: SMB/Windows Admin Shares'},
+            'mysql': {'technique': 'T1505.003', 'name': 'Server Software Component: Web Shell'},
+            'rdp': {'technique': 'T1021.001', 'name': 'Remote Services: Remote Desktop Protocol'},
+            'smb': {'technique': 'T1021.002', 'name': 'Remote Services: SMB/Windows Admin Shares'}
+        }
+    
+    def load_vulnerability_data(self, data_source: str) -> List[Dict]:
+        """Load vulnerability data from various sources"""
+        if isinstance(data_source, str) and Path(data_source).exists():
+            with open(data_source, 'r') as f:
+                return json.load(f)
+        elif isinstance(data_source, list):
+            return data_source
         else:
-            width = 0.16
-            height = 0.06
-            facecolor = d.get("color", "#9E9E9E")
+            # Generate sample data for testing
+            return self._generate_sample_data()
+    
+    def _generate_sample_data(self) -> List[Dict]:
+        """Generate realistic sample vulnerability data"""
+        return [
+            {
+                "finding_id": "vuln_web_001",
+                "host": "web-dmz-01",
+                "ip": "10.0.1.100",
+                "service": "http",
+                "port": 80,
+                "version": "Apache 2.4.41",
+                "cve": "CVE-2021-44228",
+                "cvss": 9.8,
+                "severity": "Critical",
+                "evidence": "Log4j RCE vulnerability in web application",
+                "asset_type": "web_server",
+                "network_zone": "dmz",
+                "criticality": 9,
+                "exploitability": 0.95
+            },
+            {
+                "finding_id": "vuln_db_001",
+                "host": "db-internal-01",
+                "ip": "10.0.2.200",
+                "service": "mysql",
+                "port": 3306,
+                "version": "MySQL 5.7.30",
+                "cve": "CVE-2020-14867",
+                "cvss": 7.5,
+                "severity": "High",
+                "evidence": "MySQL privilege escalation vulnerability",
+                "asset_type": "database_server",
+                "network_zone": "internal",
+                "criticality": 10,
+                "exploitability": 0.7
+            },
+            {
+                "finding_id": "vuln_ssh_001",
+                "host": "jump-server-01",
+                "ip": "10.0.1.150",
+                "service": "ssh",
+                "port": 22,
+                "version": "OpenSSH 7.4",
+                "cve": "CVE-2018-15473",
+                "cvss": 5.3,
+                "severity": "Medium",
+                "evidence": "SSH user enumeration vulnerability",
+                "asset_type": "jump_server",
+                "network_zone": "dmz",
+                "criticality": 7,
+                "exploitability": 0.4
+            },
+            {
+                "finding_id": "vuln_ftp_001",
+                "host": "file-server-01",
+                "ip": "10.0.2.180",
+                "service": "ftp",
+                "port": 21,
+                "version": "vsftpd 2.3.4",
+                "cve": "CVE-2011-2523",
+                "cvss": 10.0,
+                "severity": "Critical",
+                "evidence": "FTP backdoor vulnerability",
+                "asset_type": "file_server",
+                "network_zone": "internal",
+                "criticality": 6,
+                "exploitability": 1.0
+            },
+            {
+                "finding_id": "vuln_rdp_001",
+                "host": "admin-workstation-01",
+                "ip": "10.0.3.50",
+                "service": "rdp",
+                "port": 3389,
+                "version": "Windows RDP",
+                "cve": "CVE-2019-0708",
+                "cvss": 9.8,
+                "severity": "Critical",
+                "evidence": "BlueKeep RDP vulnerability",
+                "asset_type": "workstation",
+                "network_zone": "admin",
+                "criticality": 8,
+                "exploitability": 0.8
+            }
+        ]
+    
+    def build_attack_graph(self, vulnerability_data: List[Dict]) -> nx.DiGraph:
+        """Build comprehensive attack graph from vulnerability data"""
+        logger.info(f"Building attack graph from {len(vulnerability_data)} vulnerabilities")
+        
+        # Clear existing graph
+        self.graph.clear()
+        
+        # Add nodes for assets and vulnerabilities
+        for vuln in vulnerability_data:
+            self._add_asset_node(vuln)
+            self._add_vulnerability_node(vuln)
+            self._add_vulnerability_to_asset_edge(vuln)
+        
+        # Add network topology edges
+        self._add_network_topology_edges(vulnerability_data)
+        
+        # Add attack path edges
+        self._add_attack_path_edges(vulnerability_data)
+        
+        # Add MITRE ATT&CK mappings
+        self._add_mitre_mappings()
+        
+        logger.info(f"Attack graph built: {len(self.graph.nodes())} nodes, {len(self.graph.edges())} edges")
+        return self.graph
+    
+    def _add_asset_node(self, vuln: Dict):
+        """Add asset node to graph"""
+        asset_id = f"asset_{vuln['ip']}"
+        
+        if not self.graph.has_node(asset_id):
+            self.graph.add_node(asset_id,
+                              node_type="asset",
+                              ip=vuln['ip'],
+                              hostname=vuln['host'],
+                              asset_type=vuln['asset_type'],
+                              network_zone=vuln.get('network_zone', 'unknown'),
+                              criticality=vuln.get('criticality', 5),
+                              compromised=False)
+    
+    def _add_vulnerability_node(self, vuln: Dict):
+        """Add vulnerability node to graph"""
+        vuln_id = vuln['finding_id']
+        
+        self.graph.add_node(vuln_id,
+                          node_type="vulnerability",
+                          cve=vuln['cve'],
+                          cvss=vuln['cvss'],
+                          severity=vuln['severity'],
+                          service=vuln['service'],
+                          port=vuln['port'],
+                          version=vuln.get('version', ''),
+                          exploitability=vuln.get('exploitability', 0.5),
+                          evidence=vuln.get('evidence', ''))
+    
+    def _add_vulnerability_to_asset_edge(self, vuln: Dict):
+        """Add edge from vulnerability to asset"""
+        vuln_id = vuln['finding_id']
+        asset_id = f"asset_{vuln['ip']}"
+        
+        self.graph.add_edge(vuln_id, asset_id,
+                          relationship="affects",
+                          weight=self.risk_weights.get(vuln['severity'], 0.5))
+    
+    def _add_network_topology_edges(self, vulnerability_data: List[Dict]):
+        """Add network topology edges based on network zones"""
+        # Group assets by network zone
+        zones = {}
+        for vuln in vulnerability_data:
+            zone = vuln.get('network_zone', 'unknown')
+            asset_id = f"asset_{vuln['ip']}"
+            if zone not in zones:
+                zones[zone] = []
+            if asset_id not in zones[zone]:
+                zones[zone].append(asset_id)
+        
+        # Add connectivity within zones and between zones
+        zone_connectivity = {
+            ('dmz', 'internal'): 0.8,
+            ('internal', 'admin'): 0.6,
+            ('dmz', 'admin'): 0.3
+        }
+        
+        for (zone1, zone2), connectivity in zone_connectivity.items():
+            if zone1 in zones and zone2 in zones:
+                for asset1 in zones[zone1]:
+                    for asset2 in zones[zone2]:
+                        self.graph.add_edge(asset1, asset2,
+                                          relationship="network_access",
+                                          weight=connectivity,
+                                          zone_transition=f"{zone1}_to_{zone2}")
+    
+    def _add_attack_path_edges(self, vulnerability_data: List[Dict]):
+        """Add realistic attack path edges"""
+        # Define attack patterns
+        attack_patterns = [
+            # Web server compromise -> lateral movement
+            {
+                'source_service': 'http',
+                'target_services': ['mysql', 'ssh', 'ftp'],
+                'attack_type': 'lateral_movement',
+                'probability': 0.7
+            },
+            # SSH compromise -> privilege escalation
+            {
+                'source_service': 'ssh',
+                'target_services': ['http', 'mysql'],
+                'attack_type': 'privilege_escalation',
+                'probability': 0.6
+            },
+            # Database access -> data exfiltration
+            {
+                'source_service': 'mysql',
+                'target_services': ['ftp', 'rdp'],
+                'attack_type': 'data_exfiltration',
+                'probability': 0.8
+            },
+            # RDP compromise -> admin access
+            {
+                'source_service': 'rdp',
+                'target_services': ['mysql', 'ssh', 'http'],
+                'attack_type': 'admin_access',
+                'probability': 0.9
+            }
+        ]
+        
+        # Apply attack patterns
+        for pattern in attack_patterns:
+            source_vulns = [v for v in vulnerability_data 
+                           if v['service'] == pattern['source_service']]
+            target_vulns = [v for v in vulnerability_data 
+                           if v['service'] in pattern['target_services']]
+            
+            for source_vuln in source_vulns:
+                for target_vuln in target_vulns:
+                    if source_vuln['finding_id'] != target_vuln['finding_id']:
+                        # Check network reachability
+                        if self._is_network_reachable(source_vuln, target_vuln):
+                            self.graph.add_edge(
+                                source_vuln['finding_id'],
+                                target_vuln['finding_id'],
+                                relationship="attack_path",
+                                attack_type=pattern['attack_type'],
+                                probability=pattern['probability'],
+                                weight=pattern['probability']
+                            )
+    
+    def _is_network_reachable(self, source_vuln: Dict, target_vuln: Dict) -> bool:
+        """Check if target is reachable from source based on network zones"""
+        source_zone = source_vuln.get('network_zone', 'unknown')
+        target_zone = target_vuln.get('network_zone', 'unknown')
+        
+        # Define reachability matrix
+        reachability = {
+            ('dmz', 'dmz'): True,
+            ('dmz', 'internal'): True,
+            ('dmz', 'admin'): False,
+            ('internal', 'internal'): True,
+            ('internal', 'admin'): True,
+            ('internal', 'dmz'): False,
+            ('admin', 'admin'): True,
+            ('admin', 'internal'): True,
+            ('admin', 'dmz'): False
+        }
+        
+        return reachability.get((source_zone, target_zone), False)
+    
+    def _add_mitre_mappings(self):
+        """Add MITRE ATT&CK technique mappings to vulnerability nodes"""
+        for node_id, node_data in self.graph.nodes(data=True):
+            if node_data.get('node_type') == 'vulnerability':
+                service = node_data.get('service', '')
+                if service in self.mitre_mapping:
+                    mitre_info = self.mitre_mapping[service]
+                    self.graph.nodes[node_id]['mitre_technique'] = mitre_info['technique']
+                    self.graph.nodes[node_id]['mitre_name'] = mitre_info['name']
+    
+    def find_attack_paths(self, max_length: int = 5, top_k: int = 10) -> List[Dict]:
+        """Find top attack paths in the graph"""
+        logger.info("Finding attack paths...")
+        
+        # Identify entry points (externally accessible vulnerabilities)
+        entry_points = []
+        for node_id, node_data in self.graph.nodes(data=True):
+            if (node_data.get('node_type') == 'vulnerability' and
+                node_data.get('service') in ['http', 'https', 'ftp', 'ssh']):
+                entry_points.append(node_id)
+        
+        # Identify high-value targets (critical assets)
+        targets = []
+        for node_id, node_data in self.graph.nodes(data=True):
+            if (node_data.get('node_type') == 'asset' and
+                node_data.get('criticality', 0) >= 8):
+                targets.append(node_id)
+        
+        attack_paths = []
+        
+        # Find paths from each entry point to each target
+        for entry in entry_points:
+            for target in targets:
+                try:
+                    if nx.has_path(self.graph, entry, target):
+                        # Find all simple paths up to max_length
+                        paths = list(nx.all_simple_paths(
+                            self.graph, entry, target, cutoff=max_length))
+                        
+                        for path in paths:
+                            if len(path) <= max_length:
+                                risk_score = self._calculate_path_risk(path)
+                                attack_paths.append({
+                                    'entry_point': entry,
+                                    'target': target,
+                                    'path': path,
+                                    'length': len(path) - 1,
+                                    'risk_score': risk_score,
+                                    'path_description': self._describe_path(path)
+                                })
+                except nx.NetworkXNoPath:
+                    continue
+        
+        # Sort by risk score and return top k
+        attack_paths.sort(key=lambda x: x['risk_score'], reverse=True)
+        return attack_paths[:top_k]
+    
+    def _calculate_path_risk(self, path: List[str]) -> float:
+        """Calculate risk score for an attack path"""
+        total_risk = 0.0
+        path_length = len(path) - 1
+        
+        for i in range(len(path) - 1):
+            edge_data = self.graph.get_edge_data(path[i], path[i+1])
+            if edge_data:
+                weight = edge_data.get('weight', 0.5)
+                total_risk += weight
+        
+        # Normalize by path length and apply exploitability factors
+        if path_length > 0:
+            avg_risk = total_risk / path_length
+            
+            # Apply exploitability bonus for vulnerability nodes
+            exploitability_bonus = 0
+            vuln_count = 0
+            for node in path:
+                node_data = self.graph.nodes.get(node, {})
+                if node_data.get('node_type') == 'vulnerability':
+                    exploitability_bonus += node_data.get('exploitability', 0.5)
+                    vuln_count += 1
+            
+            if vuln_count > 0:
+                avg_exploitability = exploitability_bonus / vuln_count
+                return avg_risk * avg_exploitability
+        
+        return total_risk
+    
+    def _describe_path(self, path: List[str]) -> str:
+        """Generate human-readable description of attack path"""
+        descriptions = []
+        
+        for i, node in enumerate(path):
+            node_data = self.graph.nodes.get(node, {})
+            
+            if node_data.get('node_type') == 'vulnerability':
+                service = node_data.get('service', 'unknown')
+                cve = node_data.get('cve', 'unknown')
+                descriptions.append(f"Exploit {service} ({cve})")
+            elif node_data.get('node_type') == 'asset':
+                hostname = node_data.get('hostname', 'unknown')
+                asset_type = node_data.get('asset_type', 'unknown')
+                descriptions.append(f"Compromise {hostname} ({asset_type})")
+        
+        return " → ".join(descriptions)
+    
+    def visualize_attack_graph(self, output_file: str = "attack_graph.png", 
+                             layout: str = "spring", figsize: Tuple[int, int] = (20, 15)):
+        """Create advanced visualization of the attack graph"""
+        logger.info(f"Creating attack graph visualization: {output_file}")
+        
+        plt.figure(figsize=figsize)
+        
+        # Choose layout algorithm
+        if layout == "spring":
+            pos = nx.spring_layout(self.graph, k=3, iterations=50, seed=42)
+        elif layout == "circular":
+            pos = nx.circular_layout(self.graph)
+        elif layout == "hierarchical":
+            pos = nx.nx_agraph.graphviz_layout(self.graph, prog='dot')
+        else:
+            pos = nx.spring_layout(self.graph)
+        
+        # Separate nodes by type and properties
+        asset_nodes = []
+        vuln_nodes_critical = []
+        vuln_nodes_high = []
+        vuln_nodes_medium = []
+        vuln_nodes_low = []
+        
+        for node_id, node_data in self.graph.nodes(data=True):
+            if node_data.get('node_type') == 'asset':
+                asset_nodes.append(node_id)
+            elif node_data.get('node_type') == 'vulnerability':
+                severity = node_data.get('severity', 'Low')
+                if severity == 'Critical':
+                    vuln_nodes_critical.append(node_id)
+                elif severity == 'High':
+                    vuln_nodes_high.append(node_id)
+                elif severity == 'Medium':
+                    vuln_nodes_medium.append(node_id)
+                else:
+                    vuln_nodes_low.append(node_id)
+        
+        # Draw nodes with different colors and sizes
+        nx.draw_networkx_nodes(self.graph, pos, nodelist=asset_nodes,
+                              node_color='lightblue', node_size=1500, 
+                              alpha=0.8, node_shape='s')
+        
+        nx.draw_networkx_nodes(self.graph, pos, nodelist=vuln_nodes_critical,
+                              node_color='darkred', node_size=1000, alpha=0.9)
+        
+        nx.draw_networkx_nodes(self.graph, pos, nodelist=vuln_nodes_high,
+                              node_color='red', node_size=800, alpha=0.8)
+        
+        nx.draw_networkx_nodes(self.graph, pos, nodelist=vuln_nodes_medium,
+                              node_color='orange', node_size=600, alpha=0.7)
+        
+        nx.draw_networkx_nodes(self.graph, pos, nodelist=vuln_nodes_low,
+                              node_color='yellow', node_size=400, alpha=0.6)
+        
+        # Draw edges with different styles
+        attack_edges = [(u, v) for u, v, d in self.graph.edges(data=True)
+                       if d.get('relationship') == 'attack_path']
+        affect_edges = [(u, v) for u, v, d in self.graph.edges(data=True)
+                       if d.get('relationship') == 'affects']
+        network_edges = [(u, v) for u, v, d in self.graph.edges(data=True)
+                        if d.get('relationship') == 'network_access']
+        
+        nx.draw_networkx_edges(self.graph, pos, edgelist=attack_edges,
+                              edge_color='red', width=3, alpha=0.8,
+                              arrowsize=20, arrowstyle='->')
+        
+        nx.draw_networkx_edges(self.graph, pos, edgelist=affect_edges,
+                              edge_color='gray', width=1, alpha=0.5,
+                              arrowsize=15, arrowstyle='->')
+        
+        nx.draw_networkx_edges(self.graph, pos, edgelist=network_edges,
+                              edge_color='blue', width=1, alpha=0.3,
+                              arrowsize=10, arrowstyle='->', style='dashed')
+        
+        # Add labels
+        labels = {}
+        for node_id, node_data in self.graph.nodes(data=True):
+            if node_data.get('node_type') == 'asset':
+                labels[node_id] = node_data.get('hostname', node_id)
+            else:
+                cve = node_data.get('cve', node_id)
+                service = node_data.get('service', '')
+                labels[node_id] = f"{cve}\n({service})"
+        
+        nx.draw_networkx_labels(self.graph, pos, labels, font_size=8, font_weight='bold')
+        
+        # Create legend
+        legend_elements = [
+            mpatches.Rectangle((0, 0), 1, 1, facecolor='lightblue', label='Assets'),
+            mpatches.Circle((0, 0), 1, facecolor='darkred', label='Critical Vulns'),
+            mpatches.Circle((0, 0), 1, facecolor='red', label='High Vulns'),
+            mpatches.Circle((0, 0), 1, facecolor='orange', label='Medium Vulns'),
+            mpatches.Circle((0, 0), 1, facecolor='yellow', label='Low Vulns'),
+            plt.Line2D([0], [0], color='red', linewidth=3, label='Attack Paths'),
+            plt.Line2D([0], [0], color='gray', linewidth=1, label='Affects'),
+            plt.Line2D([0], [0], color='blue', linewidth=1, linestyle='--', label='Network Access')
+        ]
+        
+        plt.legend(handles=legend_elements, loc='upper left', bbox_to_anchor=(1, 1))
+        
+        plt.title("SecureChain Attack Graph Analysis", size=20, fontweight='bold')
+        plt.axis('off')
+        plt.tight_layout()
+        plt.savefig(output_file, dpi=300, bbox_inches='tight', facecolor='white')
+        plt.close()
+        
+        logger.info(f"Attack graph visualization saved to {output_file}")
+    
+    def create_interactive_visualization(self, output_file: str = "attack_graph_interactive.html"):
+        """Create interactive Plotly visualization"""
+        logger.info(f"Creating interactive visualization: {output_file}")
+        
+        # Get node positions
+        pos = nx.spring_layout(self.graph, k=3, iterations=50, seed=42)
+        
+        # Prepare node data
+        node_x = []
+        node_y = []
+        node_text = []
+        node_color = []
+        node_size = []
+        
+        for node_id, node_data in self.graph.nodes(data=True):
+            x, y = pos[node_id]
+            node_x.append(x)
+            node_y.append(y)
+            
+            if node_data.get('node_type') == 'asset':
+                hostname = node_data.get('hostname', node_id)
+                asset_type = node_data.get('asset_type', 'unknown')
+                criticality = node_data.get('criticality', 0)
+                node_text.append(f"Asset: {hostname}<br>Type: {asset_type}<br>Criticality: {criticality}")
+                node_color.append('lightblue')
+                node_size.append(30)
+            else:
+                cve = node_data.get('cve', node_id)
+                service = node_data.get('service', 'unknown')
+                severity = node_data.get('severity', 'Low')
+                cvss = node_data.get('cvss', 0)
+                node_text.append(f"Vulnerability: {cve}<br>Service: {service}<br>Severity: {severity}<br>CVSS: {cvss}")
+                
+                if severity == 'Critical':
+                    node_color.append('darkred')
+                    node_size.append(25)
+                elif severity == 'High':
+                    node_color.append('red')
+                    node_size.append(20)
+                elif severity == 'Medium':
+                    node_color.append('orange')
+                    node_size.append(15)
+                else:
+                    node_color.append('yellow')
+                    node_size.append(10)
+        
+        # Prepare edge data
+        edge_x = []
+        edge_y = []
+        edge_info = []
+        
+        for edge in self.graph.edges(data=True):
+            x0, y0 = pos[edge[0]]
+            x1, y1 = pos[edge[1]]
+            edge_x.extend([x0, x1, None])
+            edge_y.extend([y0, y1, None])
+            
+            relationship = edge[2].get('relationship', 'unknown')
+            edge_info.append(f"{edge[0]} → {edge[1]}<br>Relationship: {relationship}")
+        
+        # Create Plotly figure
+        fig = go.Figure()
+        
+        # Add edges
+        fig.add_trace(go.Scatter(x=edge_x, y=edge_y,
+                                line=dict(width=1, color='gray'),
+                                hoverinfo='none',
+                                mode='lines',
+                                name='Relationships'))
+        
+        # Add nodes
+        fig.add_trace(go.Scatter(x=node_x, y=node_y,
+                                mode='markers+text',
+                                marker=dict(size=node_size,
+                                           color=node_color,
+                                           line=dict(width=2, color='black')),
+                                text=[node_id.split('_')[-1] for node_id in self.graph.nodes()],
+                                textposition="middle center",
+                                hovertext=node_text,
+                                hoverinfo='text',
+                                name='Nodes'))
+        
+        fig.update_layout(title="Interactive SecureChain Attack Graph",
+                         showlegend=False,
+                         hovermode='closest',
+                         margin=dict(b=20,l=5,r=5,t=40),
+                         annotations=[ dict(
+                             text="Hover over nodes for details",
+                             showarrow=False,
+                             xref="paper", yref="paper",
+                             x=0.005, y=-0.002,
+                             xanchor='left', yanchor='bottom',
+                             font=dict(color="gray", size=12)
+                         )],
+                         xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                         yaxis=dict(showgrid=False, zeroline=False, showticklabels=False))
+        
+        fig.write_html(output_file)
+        logger.info(f"Interactive visualization saved to {output_file}")
+    
+    def export_attack_paths_csv(self, attack_paths: List[Dict], output_file: str = "attack_paths.csv"):
+        """Export attack paths to CSV for analysis"""
+        logger.info(f"Exporting attack paths to {output_file}")
+        
+        df_data = []
+        for i, path_info in enumerate(attack_paths):
+            df_data.append({
+                'path_id': i + 1,
+                'entry_point': path_info['entry_point'],
+                'target': path_info['target'],
+                'path_length': path_info['length'],
+                'risk_score': path_info['risk_score'],
+                'path_description': path_info['path_description'],
+                'full_path': ' → '.join(path_info['path'])
+            })
+        
+        df = pd.DataFrame(df_data)
+        df.to_csv(output_file, index=False)
+        logger.info(f"Attack paths exported to {output_file}")
+    
+    def generate_risk_report(self, attack_paths: List[Dict]) -> Dict:
+        """Generate comprehensive risk assessment report"""
+        logger.info("Generating risk assessment report")
+        
+        # Calculate statistics
+        total_paths = len(attack_paths)
+        if total_paths == 0:
+            return {"error": "No attack paths found"}
+        
+        avg_path_length = np.mean([p['length'] for p in attack_paths])
+        max_risk_score = max([p['risk_score'] for p in attack_paths])
+        avg_risk_score = np.mean([p['risk_score'] for p in attack_paths])
+        
+        # Identify most common entry points and targets
+        entry_points = [p['entry_point'] for p in attack_paths]
+        targets = [p['target'] for p in attack_paths]
+        
+        from collections import Counter
+        common_entries = Counter(entry_points).most_common(5)
+        common_targets = Counter(targets).most_common(5)
+        
+        # Vulnerability severity distribution
+        vuln_severities = []
+        for node_id, node_data in self.graph.nodes(data=True):
+            if node_data.get('node_type') == 'vulnerability':
+                vuln_severities.append(node_data.get('severity', 'Low'))
+        
+        severity_dist = Counter(vuln_severities)
+        
+        report = {
+            'timestamp': datetime.now().isoformat(),
+            'summary': {
+                'total_attack_paths': total_paths,
+                'average_path_length': round(avg_path_length, 2),
+                'maximum_risk_score': round(max_risk_score, 4),
+                'average_risk_score': round(avg_risk_score, 4),
+                'total_assets': len([n for n, d in self.graph.nodes(data=True) 
+                                   if d.get('node_type') == 'asset']),
+                'total_vulnerabilities': len([n for n, d in self.graph.nodes(data=True) 
+                                            if d.get('node_type') == 'vulnerability'])
+            },
+            'top_entry_points': [{'node': ep, 'count': count} for ep, count in common_entries],
+            'top_targets': [{'node': target, 'count': count} for target, count in common_targets],
+            'vulnerability_distribution': dict(severity_dist),
+            'top_attack_paths': attack_paths[:5],
+            'recommendations': self._generate_recommendations(attack_paths)
+        }
+        
+        return report
+    
+    def _generate_recommendations(self, attack_paths: List[Dict]) -> List[str]:
+        """Generate security recommendations based on attack paths"""
+        recommendations = []
+        
+        if not attack_paths:
+            return ["No attack paths found - system appears secure"]
+        
+        # Analyze common vulnerabilities
+        vuln_services = []
+        for path in attack_paths:
+            for node in path['path']:
+                node_data = self.graph.nodes.get(node, {})
+                if node_data.get('node_type') == 'vulnerability':
+                    vuln_services.append(node_data.get('service', ''))
+        
+        from collections import Counter
+        common_services = Counter(vuln_services).most_common(3)
+        
+        for service, count in common_services:
+            if service == 'http':
+                recommendations.append(f"Secure web applications - {count} HTTP vulnerabilities found")
+            elif service == 'ssh':
+                recommendations.append(f"Harden SSH configuration - {count} SSH vulnerabilities found")
+            elif service == 'mysql':
+                recommendations.append(f"Update database security - {count} MySQL vulnerabilities found")
+            elif service == 'ftp':
+                recommendations.append(f"Consider disabling FTP or use SFTP - {count} FTP vulnerabilities found")
+            elif service == 'rdp':
+                recommendations.append(f"Secure RDP access - {count} RDP vulnerabilities found")
+        
+        # General recommendations
+        if len(attack_paths) > 10:
+            recommendations.append("High number of attack paths detected - implement network segmentation")
+        
+        max_risk = max([p['risk_score'] for p in attack_paths])
+        if max_risk > 0.8:
+            recommendations.append("Critical risk paths identified - prioritize immediate patching")
+        
+        return recommendations
 
-        # Create a rounded rect centered on (x,y)
-        bbox = FancyBboxPatch((x - width / 2, y - height / 2),
-                              width, height,
-                              boxstyle="round,pad=0.02,rounding_size=0.02",
-                              linewidth=1.0, facecolor=facecolor, edgecolor="#333333", alpha=0.95)
-        ax.add_patch(bbox)
-        node_patches.append(bbox)
-        # Add label text
-        label = d.get("label", n).replace("\n", "  ")
-        ax.text(x, y, label, ha="center", va="center", fontsize=8, color="#ffffff" if node_type == "asset" and d.get("exploit_available") else "#000000")
+def load_scan(filename: str) -> List[Dict]:
+    """Load scan data from file"""
+    if Path(filename).exists():
+        with open(filename, 'r') as f:
+            return json.load(f)
+    else:
+        # Return sample data if file doesn't exist
+        generator = AttackGraphGenerator()
+        return generator._generate_sample_data()
 
-    # Draw edges with arrows and variable width
-    for u, v, d in G.edges(data=True):
-        x1, y1 = pos[u]
-        x2, y2 = pos[v]
-        rel = d.get("relation", "")
-        w = d.get("weight", 1.0)
-        lw = 0.6 + (w / 10.0) * 2.5
-        color = "#E65100" if rel == "has_vulnerability" else "#1976D2"
+def build_graph(records: List[Dict]) -> nx.DiGraph:
+    """Build attack graph from records"""
+    generator = AttackGraphGenerator()
+    return generator.build_attack_graph(records)
 
-        # create arrow patch
-        arrow = FancyArrowPatch((x1, y1), (x2, y2),
-                                arrowstyle='-|>', mutation_scale=12,
-                                linewidth=lw, color=color, alpha=0.9)
-        ax.add_patch(arrow)
+def compute_attack_paths(graph: nx.DiGraph, entry_points: List[str] = None, 
+                        targets: List[str] = None, max_depth: int = 5, top_k: int = 10) -> List[Dict]:
+    """Compute attack paths in the graph"""
+    generator = AttackGraphGenerator()
+    generator.graph = graph
+    return generator.find_attack_paths(max_depth, top_k)
 
-        # edge label (midpoint)
-        mx, my = (x1 + x2) / 2, (y1 + y2) / 2
-        ax.text(mx, my, rel, fontsize=7, color="#333333", ha="center", va="center", bbox=dict(facecolor="white", alpha=0.6, boxstyle="round,pad=0.1", lw=0))
-
-    # Legend
-    legend_elems = [
-        Patch(facecolor="#D32F2F", edgecolor="#333", label="Asset (exploit available)"),
-        Patch(facecolor="#2E7D32", edgecolor="#333", label="Asset (no exploit)"),
-        Patch(facecolor="#9E9E9E", edgecolor="#333", label="Vulnerability"),
-        Patch(facecolor="#E65100", edgecolor="#333", label="has_vulnerability edge"),
-        Patch(facecolor="#1976D2", edgecolor="#333", label="connected_to edge")
-    ]
-    ax.legend(handles=legend_elems, loc="upper right", frameon=True)
-
-    ax.set_xticks([])
-    ax.set_yticks([])
-    ax.set_title("Attack Graph (Static View)", fontsize=16)
-    plt.tight_layout()
-
-    # Save SVG and PNG
-    plt.savefig(out_svg, format="svg", dpi=300)
-    plt.savefig(out_png, format="png", dpi=200)
-    plt.close()
-    print(f"Saved static SVG to {out_svg} and PNG to {out_png}")
-
-
-# ---------- Main ----------
 def main():
-    print("Loading scan data...")
-    records = load_scan(INPUT_FILE)
-
-    print("Building graph...")
-    G = build_graph(records)
-    print(f"Graph built: {len(G.nodes())} nodes, {len(G.edges())} edges")
-
-    # Identify entry points (prefer internet gateway or web_server)
-    entry_points = [n for n, d in G.nodes(data=True) if d.get("node_type") == "asset" and
-                    (d.get("asset_type") == "internet_gateway" or "web_server" in (d.get("asset_type") or ""))]
-    if not entry_points:
-        # Fallback: any asset with external IP or web service
-        entry_points = [n for n, d in G.nodes(data=True) if d.get("node_type") == "asset" and
-                       (not d.get("ip", "").startswith("10.") or "web" in (d.get("asset_type") or ""))]
-    # targets: DBs
-    targets = [n for n, d in G.nodes(data=True) if d.get("node_type") == "asset" and "db_server" in (d.get("asset_type") or "")]
-    if not targets:
-        # fallback to highest criticality assets
-        assets = [(n, d.get("criticality", 5)) for n, d in G.nodes(data=True) if d.get("node_type") == "asset"]
-        assets = sorted(assets, key=lambda x: -x[1])
-        targets = [assets[0][0]] if assets else []
-
-    print("Entry points:", entry_points)
-    print("Targets:", targets)
-
-    print("Computing top attack paths...")
-    paths = compute_attack_paths(G, entry_points, targets, max_depth=MAX_PATH_DEPTH, top_k=TOP_K_PATHS)
-    export_top_paths(paths, OUT_PATHS_CSV)
-    export_graph_json(G, OUT_GRAPH_JSON)
-
-    print("Creating interactive HTML...")
-    create_interactive_html(G, OUT_HTML)
-
-    print("Drawing static images (SVG/PNG)...")
-    draw_static_graph(G, OUT_SVG, OUT_PNG, figsize=FIGSIZE)
-
-    print("\nAll done! Outputs:")
-    print(" - Interactive HTML:", OUT_HTML)
-    print(" - Static SVG:", OUT_SVG)
-    print(" - Static PNG:", OUT_PNG)
-    print(" - Top paths CSV:", OUT_PATHS_CSV)
-    print(" - Full graph JSON:", OUT_GRAPH_JSON)
-
+    """Main function for standalone execution"""
+    print("🕸️  Advanced Attack Graph Generator")
+    print("="*50)
+    
+    # Initialize generator
+    generator = AttackGraphGenerator()
+    
+    # Load or generate data
+    vuln_data = generator._generate_sample_data()
+    print(f"Loaded {len(vuln_data)} vulnerability records")
+    
+    # Build attack graph
+    graph = generator.build_attack_graph(vuln_data)
+    print(f"Built attack graph: {len(graph.nodes())} nodes, {len(graph.edges())} edges")
+    
+    # Find attack paths
+    attack_paths = generator.find_attack_paths()
+    print(f"Found {len(attack_paths)} attack paths")
+    
+    # Generate visualizations
+    generator.visualize_attack_graph("advanced_attack_graph.png")
+    generator.create_interactive_visualization("advanced_attack_graph.html")
+    
+    # Export data
+    generator.export_attack_paths_csv(attack_paths, "advanced_attack_paths.csv")
+    
+    # Generate risk report
+    risk_report = generator.generate_risk_report(attack_paths)
+    with open("risk_assessment_report.json", "w") as f:
+        json.dump(risk_report, f, indent=2)
+    
+    print("\n📊 Generated Files:")
+    print("  ✅ advanced_attack_graph.png - Static visualization")
+    print("  ✅ advanced_attack_graph.html - Interactive visualization")
+    print("  ✅ advanced_attack_paths.csv - Attack path analysis")
+    print("  ✅ risk_assessment_report.json - Risk assessment report")
+    
+    print(f"\n🎯 Risk Summary:")
+    print(f"  - Total attack paths: {risk_report['summary']['total_attack_paths']}")
+    print(f"  - Average path length: {risk_report['summary']['average_path_length']}")
+    print(f"  - Maximum risk score: {risk_report['summary']['maximum_risk_score']}")
+    
+    if risk_report.get('recommendations'):
+        print(f"\n💡 Top Recommendations:")
+        for i, rec in enumerate(risk_report['recommendations'][:3], 1):
+            print(f"  {i}. {rec}")
 
 if __name__ == "__main__":
     main()
