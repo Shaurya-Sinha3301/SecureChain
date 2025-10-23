@@ -290,7 +290,7 @@ analyzer = WebsiteVulnerabilityAnalyzer("example.com")
 success = analyzer.run_complete_analysis()
 
 if success:
-    print("✅ Analysis completed!")
+    print("Analysis completed!")
     print(f"Found {len(analyzer.findings)} vulnerabilities")
     print(f"Generated attack graph with {len(analyzer.attack_graph.nodes())} nodes")
 ```
