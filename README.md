@@ -1,4 +1,4 @@
-# 🛡️ SecureChain
+# SecureChain
 
 <div align="center">
 
@@ -11,53 +11,53 @@
 
 *Transform vulnerability data into actionable security intelligence with AI-powered analysis and interactive attack graph visualization*
 
-[🚀 Quick Start](#-quick-start) • [📖 Documentation](#-documentation) • [🎯 Features](#-features) • [🎬 Demo](#-demo) • [🤝 Contributing](#-contributing)
+[Quick Start](#-quick-start) • [Documentation](#-documentation) • [Features](#-features) • [Demo](#-demo) • [Contributing](#-contributing)
 
 </div>
 
 ---
 
-## 🌟 Overview
+## Overview
 
 SecureChain is a comprehensive cybersecurity platform that revolutionizes how organizations understand and respond to security vulnerabilities. By combining AI-powered vulnerability scanning, threat intelligence integration, and interactive attack graph visualization, SecureChain transforms raw security data into actionable insights.
 
-### 🎯 What Makes SecureChain Special
+### What Makes SecureChain Special
 
-- **🔍 AI-Powered Analysis**: Intelligent vulnerability assessment with natural language explanations
-- **🕸️ Attack Graph Visualization**: Interactive NetworkX-based attack path analysis
-- **🧠 Smart Chatbot**: Conversational AI for vulnerability consultation and remediation guidance
-- **📊 Threat Intelligence**: OpenCTI integration for enriched security context
-- **🔄 Complete Pipeline**: End-to-end workflow from scan to remediation
+- **AI-Powered Analysis**: Intelligent vulnerability assessment with natural language explanations
+- **Attack Graph Visualization**: Interactive NetworkX-based attack path analysis
+- **Smart Chatbot**: Conversational AI for vulnerability consultation and remediation guidance
+- **Threat Intelligence**: OpenCTI integration for enriched security context
+- **Complete Pipeline**: End-to-end workflow from scan to remediation
 
 ---
 
-## 🎯 Features
+## Features
 
-### 🔍 **Intelligent Vulnerability Scanning**
+### **Intelligent Vulnerability Scanning**
 - Multi-engine vulnerability detection
 - AI-powered risk assessment
 - CVSS scoring and severity classification
 - Evidence-based finding validation
 
-### 🕸️ **Advanced Attack Graph Analysis**
+### **Advanced Attack Graph Analysis**
 - NetworkX-powered graph generation
 - Interactive visualization with Plotly
 - Attack path identification and risk scoring
 - MITRE ATT&CK technique mapping
 
-### 🧠 **AI Security Consultant**
+### **AI Security Consultant**
 - Natural language vulnerability explanations
 - Personalized remediation guidance
 - Context-aware conversation flow
 - Step-by-step fix instructions
 
-### 📊 **Threat Intelligence Integration**
+### **Threat Intelligence Integration**
 - OpenCTI platform connectivity
 - CVE enrichment with threat actor data
 - Real-time threat landscape updates
 - Exploit availability tracking
 
-### 🔄 **Enterprise Integration**
+### **Enterprise Integration**
 - PostgreSQL for structured data storage
 - Neo4j for graph relationship modeling
 - RESTful API for system integration
@@ -65,9 +65,9 @@ SecureChain is a comprehensive cybersecurity platform that revolutionizes how or
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
-### 1️⃣ **Complete Website Analysis**
+### 1. **Complete Website Analysis**
 Analyze any website for vulnerabilities and generate comprehensive reports:
 
 ```bash
@@ -81,7 +81,7 @@ python complete_website_analysis.py testphp.vulnweb.com
 # ✅ analysis_XXXXX_chatbot_kb.json        - AI knowledge base
 ```
 
-### 2️⃣ **Interactive AI Consultation**
+### 2. **Interactive AI Consultation**
 Chat with your personal security consultant about the findings:
 
 ```bash
@@ -89,11 +89,11 @@ Chat with your personal security consultant about the findings:
 python smart_vulnerability_chatbot.py analysis_XXXXX_chatbot_kb.json
 
 # Example conversation:
-# 💬 You: What are the critical vulnerabilities?
-# 🤖 AI: Let me cut to the chase - we have some urgent security matters...
+# You: What are the critical vulnerabilities?
+# AI: Let me cut to the chase - we have some urgent security matters...
 ```
 
-### 3️⃣ **Attack Graph Visualization**
+### 3. **Attack Graph Visualization**
 Generate sophisticated attack graphs with NetworkX:
 
 ```bash
@@ -109,9 +109,9 @@ python attackGraph/attack_graph_generator.py
 
 ---
 
-## 🎬 Demo
+## Demo
 
-### 🎯 **End-to-End Workflow Demo**
+### **End-to-End Workflow Demo**
 
 ```bash
 # Run complete demonstration
@@ -124,7 +124,7 @@ python demo_complete_workflow.py
 # 4. Report generation
 ```
 
-### 📊 **Sample Results**
+### **Sample Results**
 
 **Target**: `testphp.vulnweb.com`
 - **Vulnerabilities Found**: 7 (1 Critical, 3 High, 3 Medium)
@@ -133,9 +133,9 @@ python demo_complete_workflow.py
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
-### 🔄 **Data Flow Pipeline**
+### **Data Flow Pipeline**
 
 ```mermaid
 graph LR
@@ -148,7 +148,7 @@ graph LR
     G --> H[AI Chatbot Consultation]
 ```
 
-### 🗃️ **Technology Stack**
+### **Technology Stack**
 
 | Component | Technology | Purpose |
 |-----------|------------|---------|
@@ -161,20 +161,20 @@ graph LR
 
 ---
 
-## 📖 Documentation
+## Documentation
 
-### 🚀 **Getting Started**
+### **Getting Started**
 - [Installation Guide](docs/INSTALLATION.md)
 - [Configuration Setup](docs/CONFIGURATION.md)
 - [First Vulnerability Scan](docs/QUICK_START.md)
 
-### 🔧 **Advanced Usage**
+### **Advanced Usage**
 - [API Documentation](docs/API.md)
 - [Attack Graph Customization](docs/ATTACK_GRAPHS.md)
 - [OpenCTI Integration](docs/OPENCTI_INTEGRATION.md)
 - [Chatbot Customization](docs/CHATBOT.md)
 
-### 🏢 **Enterprise Deployment**
+### **Enterprise Deployment**
 - [Docker Deployment](docs/DOCKER.md)
 - [Kubernetes Setup](docs/KUBERNETES.md)
 - [Security Hardening](docs/SECURITY.md)
@@ -182,21 +182,21 @@ graph LR
 
 ---
 
-## 🎯 Use Cases
+## Use Cases
 
-### 🏢 **Enterprise Security Teams**
+### **Enterprise Security Teams**
 - **Vulnerability Management**: Centralized tracking and prioritization
 - **Risk Assessment**: Data-driven security decision making
 - **Compliance Reporting**: Automated security posture documentation
 - **Incident Response**: Attack path analysis for breach investigation
 
-### 🔍 **Penetration Testers**
+### **Penetration Testers**
 - **Attack Surface Mapping**: Comprehensive vulnerability discovery
 - **Exploitation Planning**: Attack graph-guided testing strategies
 - **Report Generation**: Professional vulnerability assessment reports
 - **Client Education**: AI-powered explanation of security issues
 
-### 🎓 **Security Researchers**
+### **Security Researchers**
 - **Vulnerability Analysis**: Deep-dive security research capabilities
 - **Threat Modeling**: Advanced attack scenario development
 - **Tool Integration**: Extensible platform for custom security tools
@@ -204,16 +204,16 @@ graph LR
 
 ---
 
-## 🛠️ Installation
+## Installation
 
-### 📋 **Prerequisites**
+### **Prerequisites**
 - Python 3.8+
 - Node.js 16+
 - Docker (optional)
 - PostgreSQL 12+
 - Neo4j 4.0+
 
-### ⚡ **Quick Install**
+### **Quick Install**
 
 ```bash
 # Clone the repository
@@ -237,7 +237,7 @@ python backend/init_database.py
 docker-compose up -d
 ```
 
-### 🔧 **Manual Setup**
+### **Manual Setup**
 
 <details>
 <summary>Click to expand manual installation steps</summary>
@@ -276,9 +276,9 @@ npm run dev &
 
 ---
 
-## 🎮 Usage Examples
+## Usage Examples
 
-### 🔍 **Basic Vulnerability Scan**
+### **Basic Vulnerability Scan**
 
 ```python
 from complete_website_analysis import WebsiteVulnerabilityAnalyzer
@@ -290,12 +290,12 @@ analyzer = WebsiteVulnerabilityAnalyzer("example.com")
 success = analyzer.run_complete_analysis()
 
 if success:
-    print("✅ Analysis completed!")
-    print(f"📊 Found {len(analyzer.findings)} vulnerabilities")
-    print(f"🕸️ Generated attack graph with {len(analyzer.attack_graph.nodes())} nodes")
+    print("Analysis completed!")
+    print(f"Found {len(analyzer.findings)} vulnerabilities")
+    print(f"Generated attack graph with {len(analyzer.attack_graph.nodes())} nodes")
 ```
 
-### 🤖 **AI Chatbot Integration**
+### **AI Chatbot Integration**
 
 ```python
 from smart_vulnerability_chatbot import SmartVulnerabilityChatbot
@@ -305,13 +305,13 @@ chatbot = SmartVulnerabilityChatbot("analysis_XXXXX_chatbot_kb.json")
 
 # Interactive consultation
 response = chatbot.process_query("What are the critical vulnerabilities?")
-print(f"🤖 AI: {response}")
+print(f"AI: {response}")
 
 # Start interactive session
 chatbot.start_interactive_session()
 ```
 
-### 🕸️ **Attack Graph Analysis**
+### **Attack Graph Analysis**
 
 ```python
 from attackGraph.attack_graph_generator import AttackGraphGenerator
@@ -335,9 +335,9 @@ generator.create_interactive_visualization("attack_graph.html")
 
 ---
 
-## 🔌 API Reference
+## API Reference
 
-### 🚀 **Core Endpoints**
+### **Core Endpoints**
 
 ```bash
 # Health check
@@ -371,7 +371,7 @@ POST /api/v1/chat
 }
 ```
 
-### 📊 **Response Examples**
+### **Response Examples**
 
 <details>
 <summary>Sample API Responses</summary>
@@ -410,9 +410,9 @@ POST /api/v1/chat
 
 ---
 
-## 🧪 Testing
+## Testing
 
-### 🔬 **Comprehensive Test Suite**
+### **Comprehensive Test Suite**
 
 ```bash
 # Run all tests
@@ -425,7 +425,7 @@ python attackGraph/test_attack_graph.py           # Graph generation
 python backend/test_backend.py                    # API endpoints
 ```
 
-### 📊 **Test Coverage**
+### **Test Coverage**
 
 | Component | Coverage | Status |
 |-----------|----------|--------|
@@ -437,16 +437,16 @@ python backend/test_backend.py                    # API endpoints
 
 ---
 
-## 🔒 Security
+## Security
 
-### 🛡️ **Security Features**
+### **Security Features**
 - **Input Validation**: Comprehensive sanitization of all inputs
 - **API Authentication**: JWT-based secure API access
 - **Data Encryption**: At-rest and in-transit encryption
 - **Audit Logging**: Complete activity tracking
 - **Rate Limiting**: API abuse prevention
 
-### 🔐 **Security Best Practices**
+### **Security Best Practices**
 - Regular dependency updates
 - Secure coding standards
 - Penetration testing
@@ -455,9 +455,9 @@ python backend/test_backend.py                    # API endpoints
 
 ---
 
-## 🚀 Deployment
+## Deployment
 
-### 🐳 **Docker Deployment**
+### **Docker Deployment**
 
 ```bash
 # Production deployment
@@ -470,7 +470,7 @@ docker-compose up -d
 docker-compose up -d --scale backend=3
 ```
 
-### ☸️ **Kubernetes Deployment**
+### **Kubernetes Deployment**
 
 ```bash
 # Deploy to Kubernetes
@@ -485,9 +485,9 @@ kubectl port-forward svc/securechain-frontend 3000:3000
 
 ---
 
-## 📈 Performance
+## Performance
 
-### ⚡ **Benchmarks**
+### **Benchmarks**
 
 | Operation | Performance | Scalability |
 |-----------|-------------|-------------|
@@ -496,7 +496,7 @@ kubectl port-forward svc/securechain-frontend 3000:3000
 | AI Response Time | <2 seconds | 100+ concurrent users |
 | Database Queries | <100ms | 1M+ records |
 
-### 🔧 **Optimization**
+### **Optimization**
 - Async processing for large scans
 - Caching for frequent queries
 - Database indexing optimization
@@ -504,20 +504,20 @@ kubectl port-forward svc/securechain-frontend 3000:3000
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions from the security community! 
 
-### 🎯 **How to Contribute**
+### **How to Contribute**
 
-1. **🍴 Fork the repository**
-2. **🌿 Create a feature branch**: `git checkout -b feature/amazing-feature`
-3. **💻 Make your changes**: Follow our coding standards
-4. **✅ Add tests**: Ensure your code is well-tested
-5. **📝 Update documentation**: Keep docs current
-6. **🚀 Submit a pull request**: Describe your changes
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
+3. **Make your changes**: Follow our coding standards
+4. **Add tests**: Ensure your code is well-tested
+5. **Update documentation**: Keep docs current
+6. **Submit a pull request**: Describe your changes
 
-### 🐛 **Bug Reports**
+### **Bug Reports**
 Found a bug? Please create an issue with:
 - Detailed description
 - Steps to reproduce
@@ -525,7 +525,7 @@ Found a bug? Please create an issue with:
 - Environment details
 - Screenshots (if applicable)
 
-### 💡 **Feature Requests**
+### **Feature Requests**
 Have an idea? We'd love to hear it! Please include:
 - Use case description
 - Proposed solution
@@ -534,21 +534,21 @@ Have an idea? We'd love to hear it! Please include:
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
-### 🌟 **Special Thanks**
+### **Special Thanks**
 - **MITRE Corporation** for the ATT&CK framework
 - **OpenCTI Community** for threat intelligence platform
 - **OWASP Foundation** for security standards
 - **NetworkX Team** for graph analysis capabilities
 
-### 🔧 **Built With**
+### **Built With**
 - [FastAPI](https://fastapi.tiangolo.com/) - Modern Python web framework
 - [NetworkX](https://networkx.org/) - Graph analysis library
 - [OpenCTI](https://www.opencti.io/) - Threat intelligence platform
@@ -558,28 +558,28 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 📞 Support
+## Support
 
-### 💬 **Get Help**
-- 📖 [Documentation](docs/)
-- 💬 [Discord Community](https://discord.gg/securechain)
-- 🐛 [Issue Tracker](https://github.com/yourusername/securechain/issues)
-- 📧 [Email Support](mailto:support@securechain.io)
+### **Get Help**
+- [Documentation](docs/)
+- [Discord Community](https://discord.gg/securechain)
+- [Issue Tracker](https://github.com/yourusername/securechain/issues)
+- [Email Support](mailto:support@securechain.io)
 
-### 🏢 **Enterprise Support**
+### **Enterprise Support**
 For enterprise deployments, custom integrations, and professional support:
-- 📧 Enterprise: [enterprise@securechain.io](mailto:enterprise@securechain.io)
-- 📞 Phone: +1 (555) 123-4567
-- 🌐 Website: [securechain.io](https://securechain.io)
+- Enterprise: [enterprise@securechain.io](mailto:enterprise@securechain.io)
+- Phone: +1 (555) 123-4567
+- Website: [securechain.io](https://securechain.io)
 
 ---
 
 <div align="center">
 
-**Made with ❤️ by the SecureChain Team**
+**Made with dedication by the SecureChain Team**
 
-[⭐ Star us on GitHub](https://github.com/yourusername/securechain) • [🐦 Follow on Twitter](https://twitter.com/securechain) • [💼 LinkedIn](https://linkedin.com/company/securechain)
+[Star us on GitHub](https://github.com/yourusername/securechain) • [Follow on Twitter](https://twitter.com/securechain) • [LinkedIn](https://linkedin.com/company/securechain)
 
-*Securing the digital world, one vulnerability at a time* 🛡️
+*Securing the digital world, one vulnerability at a time*
 
 </div>
